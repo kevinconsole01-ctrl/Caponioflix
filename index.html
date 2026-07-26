@@ -101,8 +101,7 @@
         input:focus, 
         .type-selector label:focus-within {
             outline: 3px solid #ffffff !important;
-            background-color: #3f3f46 !important;
-            color: #ffffff !important;
+            border-color: #ffffff !important;
         }
 
         .search-box input[type="text"] {
@@ -141,39 +140,63 @@
             text-align: center;
         }
 
+        /* Griglia dei risultati con locandine */
         .results-list {
             background-color: var(--list-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            max-height: 250px;
+            max-height: 420px;
             overflow-y: auto;
             margin-bottom: 15px;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        /* Card del singolo film / serie */
+        .result-item-btn {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 8px;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        /* Pulsanti trasformati in vere e proprie righe selezionabili */
-        .result-item-btn {
+        .poster-img {
             width: 100%;
-            text-align: left;
-            background: transparent;
-            color: var(--text-color);
-            border: none;
-            border-bottom: 1px solid var(--card-bg);
-            border-radius: 0;
-            padding: 12px 15px;
-            font-size: 1rem;
-            font-weight: normal;
+            height: 170px;
+            object-fit: cover;
+            border-radius: 6px;
+            background-color: #27272a;
+            margin-bottom: 8px;
         }
 
-        .result-item-btn:last-child {
-            border-bottom: none;
+        .item-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .result-item-btn:focus {
+            background-color: #3f3f46 !important;
+            border-color: #ffffff !important;
+            transform: scale(1.03);
         }
 
         .result-item-btn.selected {
-            background-color: var(--accent-green) !important;
-            color: #ffffff !important;
-            font-weight: bold;
+            border-color: var(--accent-green) !important;
+            background-color: #1c3829 !important;
         }
 
         .btn-open {
@@ -181,6 +204,19 @@
             background-color: var(--accent-green);
             color: #ffffff;
             margin-bottom: 20px;
+            padding: 14px;
+            font-size: 1.1rem;
+        }
+
+        .btn-open:focus {
+            background-color: #16a34a !important;
+        }
+
+        .status-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-muted);
+            padding: 20px;
         }
     </style>
 </head>
@@ -213,7 +249,7 @@
     </div>
 
     <div class="results-list" id="resultsList">
-        <button class="result-item-btn" style="color: var(--text-muted); cursor: default;" disabled>Effettua una ricerca...</button>
+        <div class="status-msg">Effettua una ricerca...</div>
     </div>
 
     <button class="btn-open" onclick="riproduciInPagina()" tabindex="0">▶ Guarda Stream</button>
@@ -242,7 +278,7 @@
 
         if (!query) return;
 
-        listContainer.innerHTML = '<button class="result-item-btn" disabled>Ricerca in corso...</button>';
+        listContainer.innerHTML = '<div class="status-msg">Ricerca in corso...</div>';
         risultatiRicerca = [];
         elementoSelezionato = null;
 
@@ -256,7 +292,7 @@
             listContainer.innerHTML = '';
 
             if (results.length === 0) {
-                listContainer.innerHTML = '<button class="result-item-btn" disabled>Nessun risultato trovato.</button>';
+                listContainer.innerHTML = '<div class="status-msg">Nessun risultato trovato.</div>';
                 return;
             }
 
@@ -266,12 +302,21 @@
                 const nome = type === 'movie' ? item.title : item.name;
                 const dataUscita = type === 'movie' ? item.release_date : item.first_air_date;
                 const anno = dataUscita ? ` (${dataUscita.substring(0, 4)})` : '';
+                
+                // URL della locandina TMDB (w185 = dimensione ottima per le card)
+                const posterPath = item.poster_path 
+                    ? `https://image.tmdb.org/t/p/w185${item.poster_path}`
+                    : 'https://via.placeholder.com/185x278?text=No+Cover';
 
                 const btn = document.createElement('button');
                 btn.className = 'result-item-btn';
                 btn.type = 'button';
                 btn.tabIndex = 0;
-                btn.innerText = `${nome}${anno}`;
+                
+                btn.innerHTML = `
+                    <img class="poster-img" src="${posterPath}" alt="${nome}" />
+                    <span class="item-title">${nome}${anno}</span>
+                `;
                 
                 btn.onclick = () => {
                     selezionaVoce(btn, index);
@@ -281,7 +326,7 @@
             });
 
         } catch (err) {
-            listContainer.innerHTML = `<button class="result-item-btn" disabled>Errore: ${err.message}</button>`;
+            listContainer.innerHTML = `<div class="status-msg">Errore: ${err.message}</div>`;
         }
     }
 
