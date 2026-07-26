@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Caponioflix</title>
     <style>
         :root {
             --bg-color: #0f0f11;
@@ -219,7 +219,7 @@
         <img src="logo.png" alt="Logo Caponioflix" class="app-logo">
     </div>
 
-    <h1></h1>
+    <h1>Caponioflix</h1>
 
     <div class="type-selector">
         <label>
@@ -244,7 +244,7 @@
         <div class="result-item" style="color: var(--text-muted); cursor: default;">Effettua una ricerca...</div>
     </div>
 
-    <button class="btn-open" onclick="riproduciInPagina()" tabindex="0"> ▶ Guarda ora! </button>
+    <button class="btn-open" onclick="riproduciInPagina()" tabindex="0">▶ Guarda Stream</button>
 
     <div class="player-wrapper" id="playerWrapper">
         <iframe id="videoPlayer" allowfullscreen scrolling="no"></iframe>
@@ -347,13 +347,8 @@
             url = `https://vixsrc.to/tv/${tmdbId}/${season}/${episode}/`;
         }
 
-        const wrapper = document.getElementById('playerWrapper');
-        const iframe = document.getElementById('videoPlayer');
-
-        iframe.src = url;
-        wrapper.classList.add('active');
-
-        wrapper.scrollIntoView({ behavior: 'smooth' });
+        // Apre il link direttamente nel browser della TV evitando il blocco della WebView
+        window.open(url, '_blank');
     }
 
     function aggiornaVideoSeAttivo() {
