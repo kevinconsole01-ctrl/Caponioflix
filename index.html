@@ -453,7 +453,7 @@
             </div>
             
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Cerca titolo..." onkeydown="if(event.key === 'Enter') cerca(true)" tabindex="0">
+                <input type="text" id="searchInput" placeholder="Cerca titolo..." oninput="if(event.key === 'Enter') cerca(true)" tabindex="0">
                 <button class="btn-action" onclick="cerca(true)" tabindex="0">Cerca</button>
             </div>
         </div>
@@ -477,7 +477,8 @@
             </button>
         </div>
     </div>
-
+<div class="section-title" id="recsTitle" style="display:none;">Potrebbe piacerti anche</div>
+<div id="recsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:10px;"></div>
     <!-- LISTA RISULTATI / POPOLARI -->
     <div>
         <div class="section-title" id="gridTitle">Popolari del momento</div>
@@ -499,7 +500,27 @@
     let elementoSelezionato = null;
     let currentPage = 1;
     let isSearchMode = false;
-
+    let debounceTimer;
+function onInputSearch() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        cerca(true);
+    }, 500); // Aspetta mezzo secondo prima di cercare
+}
+async function fetchRecommendations(id) {
+    const res = await fetch(`https://api.themoviedb.org/3/${currentType}/${id}/recommendations?api_key=${API_KEY}&language=it-IT`);
+    const data = await res.json();
+    const grid = document.getElementById('recsGrid');
+    document.getElementById('recsTitle').style.display = 'block';
+    grid.innerHTML = '';
+    data.results.slice(0, 5).forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card-item';
+        card.innerHTML = `<img src="https://image.tmdb.org/t/p/w200${item.poster_path}" style="width:100%">`;
+        card.onclick = () => { window.scrollTo({top:0, behavior:'smooth'}); }; // scrolla su
+        grid.appendChild(card);
+    });
+}
     window.onload = () => {
         caricaPopolari(true);
     };
