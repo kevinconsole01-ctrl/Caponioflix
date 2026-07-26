@@ -207,7 +207,18 @@
             gap: 10px;
             flex-grow: 1;
             min-width: 0;
-            <button class="btn-action" style="background:#555; margin-top:5px;" onclick="showTrailer()">📺 Trailer</button>
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .btn-trailer {
+            background: #555;
         }
 
         .hero-title {
@@ -357,7 +368,162 @@
             font-size: 0.95rem;
         }
 
-        /* MOBILE RESPONSIVE */
+        .genre-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        .genre-tag {
+            padding: 6px 14px;
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        .genre-tag:hover {
+            color: var(--text-color);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .genre-tag.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .genre-tag:focus {
+            outline: none;
+            border-color: #fff;
+            box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.45);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes heroFade {
+            from { opacity: 0.55; }
+            to { opacity: 1; }
+        }
+
+        @keyframes layoutFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalBackdropIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalContentIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .main-layout {
+            animation: layoutFadeIn 0.45s ease-out;
+        }
+
+        .hero-section.hero-animate .hero-poster,
+        .hero-section.hero-animate .hero-details {
+            animation: heroFade 0.35s ease-out;
+        }
+
+        .hero-poster {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .card-item {
+            animation: fadeInUp 0.4s ease-out both;
+        }
+
+        .card-item:hover:not(:focus) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+        }
+
+        .btn-action,
+        .btn-play-large {
+            transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-action:active,
+        .btn-play-large:active {
+            transform: scale(0.97);
+        }
+
+        .btn-play-large:hover {
+            box-shadow: 0 4px 18px rgba(229, 9, 20, 0.45);
+        }
+
+        .trailer-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .trailer-modal.is-open {
+            display: flex;
+            animation: modalBackdropIn 0.25s ease-out;
+        }
+
+        .trailer-modal.is-open .trailer-modal-frame {
+            animation: modalContentIn 0.3s ease-out;
+        }
+
+        .trailer-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .main-layout,
+            .card-item,
+            .hero-section.hero-animate .hero-poster,
+            .hero-section.hero-animate .hero-details,
+            .trailer-modal.is-open,
+            .trailer-modal.is-open .trailer-modal-frame {
+                animation: none;
+            }
+
+            .card-item:hover:not(:focus) {
+                transform: none;
+            }
+        }
         @media (max-width: 600px) {
             .main-layout {
                 padding: 12px;
@@ -412,7 +578,16 @@
                 font-size: 1.3rem;
             }
 
+            .hero-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
             .btn-play-large {
+                width: 100%;
+            }
+
+            .hero-actions .btn-trailer {
                 width: 100%;
             }
 
@@ -423,6 +598,15 @@
             .results-grid {
                 grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
                 gap: 8px;
+            }
+
+            .genre-bar {
+                gap: 6px;
+            }
+
+            .genre-tag {
+                padding: 5px 11px;
+                font-size: 0.8rem;
             }
 
             .card-img {
@@ -453,8 +637,8 @@
             </div>
             
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Cerca titolo..." oninput="if(event.key === 'Enter') cerca(true)" tabindex="0">
-                <button class="btn-action" onclick="cerca(true)" tabindex="0">Cerca</button>
+                <input type="text" id="searchInput" placeholder="Digita per cercare..." oninput="onInputSearch()" onkeydown="if(event.key === 'Enter') cercaImmediata()" tabindex="0" autocomplete="off">
+                <button class="btn-action" type="button" onclick="cercaImmediata()" tabindex="0">Cerca</button>
             </div>
         </div>
     </header>
@@ -472,9 +656,12 @@
                 <label>Episodio: <input type="number" id="episodeInput" value="1" min="1" tabindex="0"></label>
             </div>
 
-            <button class="btn-play-large" id="btnPlay" onclick="riproduciInPagina()" tabindex="0">
-                ▶ GUARDA ORA
-            </button>
+            <div class="hero-actions">
+                <button class="btn-play-large" id="btnPlay" onclick="riproduciInPagina()" tabindex="0">
+                    ▶ GUARDA ORA
+                </button>
+                <button class="btn-action btn-trailer" type="button" onclick="showTrailer()" tabindex="0">Trailer</button>
+            </div>
         </div>
     </div>
 <div class="section-title" id="recsTitle" style="display:none;">Potrebbe piacerti anche</div>
@@ -482,6 +669,7 @@
     <!-- LISTA RISULTATI / POPOLARI -->
     <div>
         <div class="section-title" id="gridTitle">Popolari del momento</div>
+        <div class="genre-bar" id="genreBar" role="group" aria-label="Filtra per genere"></div>
         <div class="results-grid" id="resultsList">
             <div class="status-msg">Caricamento contenuti in corso...</div>
         </div>
@@ -500,28 +688,147 @@
     let elementoSelezionato = null;
     let currentPage = 1;
     let isSearchMode = false;
+    let selectedGenreId = null;
+    const SEARCH_DEBOUNCE_MS = 500;
     let debounceTimer;
-function onInputSearch() {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
+
+    const GENRES_BY_TYPE = {
+        movie: [
+            { id: null, label: 'Tutti' },
+            { id: 28, label: 'Azione' },
+            { id: 35, label: 'Commedia' },
+            { id: 27, label: 'Horror' },
+            { id: 18, label: 'Dramma' },
+            { id: 878, label: 'Fantascienza' },
+            { id: 53, label: 'Thriller' },
+            { id: 10749, label: 'Romantico' }
+        ],
+        tv: [
+            { id: null, label: 'Tutti' },
+            { id: 10759, label: 'Azione' },
+            { id: 35, label: 'Commedia' },
+            { id: 9648, label: 'Horror' },
+            { id: 18, label: 'Dramma' },
+            { id: 10765, label: 'Fantascienza' },
+            { id: 80, label: 'Crime' },
+            { id: 10751, label: 'Famiglia' }
+        ]
+    };
+
+    function getGenreLabel(id) {
+        if (id == null) return '';
+        const list = GENRES_BY_TYPE[currentType] || [];
+        return list.find(g => g.id === id)?.label || 'Genere';
+    }
+
+    function renderGenreTags() {
+        const bar = document.getElementById('genreBar');
+        bar.innerHTML = '';
+        (GENRES_BY_TYPE[currentType] || []).forEach(genre => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'genre-tag' + (selectedGenreId === genre.id ? ' active' : '');
+            btn.textContent = genre.label;
+            btn.tabIndex = 0;
+            btn.onclick = () => setGenreFilter(genre.id);
+            bar.appendChild(btn);
+        });
+    }
+
+    function setGenreFilter(genreId) {
+        selectedGenreId = genreId;
+        renderGenreTags();
+        ricaricaLista(true);
+    }
+
+    function aggiornaTitoloGriglia() {
+        const query = document.getElementById('searchInput').value.trim();
+        const tipo = currentType === 'movie' ? 'Film' : 'Serie TV';
+        if (query) {
+            const genere = selectedGenreId ? ` · ${getGenreLabel(selectedGenreId)}` : '';
+            document.getElementById('gridTitle').innerText = `Risultati per "${query}"${genere}`;
+            return;
+        }
+        if (selectedGenreId) {
+            document.getElementById('gridTitle').innerText = `${getGenreLabel(selectedGenreId)} · ${tipo}`;
+            return;
+        }
+        document.getElementById('gridTitle').innerText = `Popolari del momento (${tipo})`;
+    }
+
+    function ricaricaLista(reset = true) {
+        const query = document.getElementById('searchInput').value.trim();
+        if (query) {
+            cerca(reset);
+        } else if (selectedGenreId) {
+            caricaPerGenere(reset);
+        } else {
+            caricaPopolari(reset);
+        }
+    }
+
+    function onInputSearch() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            cerca(true);
+        }, SEARCH_DEBOUNCE_MS);
+    }
+
+    function cercaImmediata() {
+        clearTimeout(debounceTimer);
         cerca(true);
-    }, 500); // Aspetta mezzo secondo prima di cercare
-}
+    }
 async function fetchRecommendations(id) {
-    const res = await fetch(`https://api.themoviedb.org/3/${currentType}/${id}/recommendations?api_key=${API_KEY}&language=it-IT`);
-    const data = await res.json();
     const grid = document.getElementById('recsGrid');
-    document.getElementById('recsTitle').style.display = 'block';
-    grid.innerHTML = '';
-    data.results.slice(0, 5).forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card-item';
-        card.innerHTML = `<img src="https://image.tmdb.org/t/p/w200${item.poster_path}" style="width:100%">`;
-        card.onclick = () => { window.scrollTo({top:0, behavior:'smooth'}); }; // scrolla su
-        grid.appendChild(card);
-    });
+    const titleEl = document.getElementById('recsTitle');
+    try {
+        const res = await fetch(`https://api.themoviedb.org/3/${currentType}/${id}/recommendations?api_key=${API_KEY}&language=it-IT`);
+        if (!res.ok) {
+            titleEl.style.display = 'none';
+            grid.innerHTML = '';
+            return;
+        }
+        const data = await res.json();
+        const results = (data.results || []).slice(0, 5);
+        if (results.length === 0) {
+            titleEl.style.display = 'none';
+            grid.innerHTML = '';
+            return;
+        }
+        titleEl.style.display = 'block';
+        grid.innerHTML = '';
+        results.forEach(item => {
+            const posterPath = item.poster_path
+                ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
+                : 'https://via.placeholder.com/185x278?text=No+Cover';
+            const card = document.createElement('div');
+            card.className = 'card-item rec-card';
+            card.tabIndex = 0;
+            const img = document.createElement('img');
+            img.src = posterPath;
+            img.alt = currentType === 'movie' ? (item.title || '') : (item.name || '');
+            img.style.width = '100%';
+            card.appendChild(img);
+            card.onclick = () => selezionaItem(item);
+            grid.appendChild(card);
+        });
+    } catch {
+        titleEl.style.display = 'none';
+        grid.innerHTML = '';
+    }
 }
+
+    function selezionaItem(item) {
+        let index = risultatiRicerca.findIndex(r => r.id === item.id);
+        if (index === -1) {
+            risultatiRicerca.push(item);
+            index = risultatiRicerca.length - 1;
+        }
+        aggiornaHero(index);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     window.onload = () => {
+        renderGenreTags();
         caricaPopolari(true);
     };
 
@@ -542,6 +849,9 @@ async function fetchRecommendations(id) {
             frame.classList.remove('active');
         }
 
+        selectedGenreId = null;
+        renderGenreTags();
+
         const query = document.getElementById('searchInput').value.trim();
         if (!query) {
             caricaPopolari(true);
@@ -557,12 +867,30 @@ async function fetchRecommendations(id) {
             risultatiRicerca = [];
             document.getElementById('resultsList').innerHTML = '<div class="status-msg">Caricamento in corso...</div>';
         }
-        document.getElementById('gridTitle').innerText = `Popolari del momento (${currentType === 'movie' ? 'Film' : 'Serie TV'})`;
+        aggiornaTitoloGriglia();
 
         await fetchEPopola(`https://api.themoviedb.org/3/trending/${currentType}/week?api_key=${API_KEY}&language=it-IT&page=${currentPage}`, reset);
         currentPage++;
         await fetchEPopola(`https://api.themoviedb.org/3/trending/${currentType}/week?api_key=${API_KEY}&language=it-IT&page=${currentPage}`, false);
-        
+
+        document.getElementById('btnLoadMore').style.display = 'block';
+    }
+
+    async function caricaPerGenere(reset = false) {
+        isSearchMode = false;
+        if (reset) {
+            currentPage = 1;
+            risultatiRicerca = [];
+            document.getElementById('resultsList').innerHTML = '<div class="status-msg">Caricamento in corso...</div>';
+        }
+        aggiornaTitoloGriglia();
+
+        const discoverBase = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${API_KEY}&language=it-IT&sort_by=popularity.desc&with_genres=${selectedGenreId}`;
+
+        await fetchEPopola(`${discoverBase}&page=${currentPage}`, reset);
+        currentPage++;
+        await fetchEPopola(`${discoverBase}&page=${currentPage}`, false);
+
         document.getElementById('btnLoadMore').style.display = 'block';
     }
 
@@ -570,7 +898,7 @@ async function fetchRecommendations(id) {
         const query = document.getElementById('searchInput').value.trim();
 
         if (!query) {
-            caricaPopolari(true);
+            ricaricaLista(true);
             return;
         }
 
@@ -580,22 +908,26 @@ async function fetchRecommendations(id) {
             risultatiRicerca = [];
             document.getElementById('resultsList').innerHTML = '<div class="status-msg">Ricerca in corso...</div>';
         }
-        document.getElementById('gridTitle').innerText = "Risultati della ricerca";
+        aggiornaTitoloGriglia();
 
         const baseUrl = `https://api.themoviedb.org/3/search/${currentType}?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=it-IT`;
-        
-        await fetchEPopola(`${baseUrl}&page=${currentPage}`, reset);
+        const genreFilter = selectedGenreId;
+
+        await fetchEPopola(`${baseUrl}&page=${currentPage}`, reset, genreFilter);
         currentPage++;
-        await fetchEPopola(`${baseUrl}&page=${currentPage}`, false);
+        await fetchEPopola(`${baseUrl}&page=${currentPage}`, false, genreFilter);
 
         document.getElementById('btnLoadMore').style.display = 'block';
     }
 
     function caricaAltriRisultati() {
         currentPage++;
-        if (isSearchMode) {
-            const query = document.getElementById('searchInput').value.trim();
+        const query = document.getElementById('searchInput').value.trim();
+        if (isSearchMode && query) {
             const url = `https://api.themoviedb.org/3/search/${currentType}?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=it-IT&page=${currentPage}`;
+            fetchEPopola(url, false, selectedGenreId);
+        } else if (selectedGenreId) {
+            const url = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${API_KEY}&language=it-IT&sort_by=popularity.desc&with_genres=${selectedGenreId}&page=${currentPage}`;
             fetchEPopola(url, false);
         } else {
             const url = `https://api.themoviedb.org/3/trending/${currentType}/week?api_key=${API_KEY}&language=it-IT&page=${currentPage}`;
@@ -603,13 +935,20 @@ async function fetchRecommendations(id) {
         }
     }
 
-    async function fetchEPopola(url, resetGrid = false) {
+    async function fetchEPopola(url, resetGrid = false, genreFilter = null) {
         const listContainer = document.getElementById('resultsList');
 
         try {
             const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`API ${response.status}`);
+            }
             const data = await response.json();
-            const results = data.results || [];
+            let results = data.results || [];
+
+            if (genreFilter) {
+                results = results.filter(item => (item.genre_ids || []).includes(genreFilter));
+            }
 
             if (resetGrid) {
                 listContainer.innerHTML = '';
@@ -635,13 +974,21 @@ async function fetchRecommendations(id) {
                 const card = document.createElement('div');
                 card.className = 'card-item';
                 card.tabIndex = 0;
-                
-                card.innerHTML = `
-                    <img class="card-img" src="${posterPath}" alt="${nome}" />
-                    <div class="card-info">
-                        <div class="card-title">${nome}</div>
-                    </div>
-                `;
+
+                const img = document.createElement('img');
+                img.className = 'card-img';
+                img.src = posterPath;
+                img.alt = nome || '';
+
+                const cardInfo = document.createElement('div');
+                cardInfo.className = 'card-info';
+                const titleEl = document.createElement('div');
+                titleEl.className = 'card-title';
+                titleEl.textContent = nome || '';
+
+                cardInfo.appendChild(titleEl);
+                card.appendChild(img);
+                card.appendChild(cardInfo);
 
                 card.onfocus = () => aggiornaHero(currentIndex);
                 card.onclick = () => {
@@ -655,6 +1002,11 @@ async function fetchRecommendations(id) {
                         document.getElementById('btnPlay').focus();
                     }
                 };
+
+                const delayIndex = currentIndex - startIndex;
+                if (delayIndex <= 14) {
+                    card.style.animationDelay = `${delayIndex * 35}ms`;
+                }
 
                 listContainer.appendChild(card);
             });
@@ -674,8 +1026,14 @@ async function fetchRecommendations(id) {
         elementoSelezionato = risultatiRicerca[index];
         if (!elementoSelezionato) return;
 
-        document.querySelectorAll('.card-item').forEach((el, i) => {
-            el.classList.toggle('selected', i === index);
+        const heroSection = document.getElementById('heroSection');
+        heroSection.classList.remove('hero-animate');
+        void heroSection.offsetWidth;
+        heroSection.classList.add('hero-animate');
+
+        const selectedId = elementoSelezionato.id;
+        document.querySelectorAll('#resultsList .card-item').forEach((el, i) => {
+            el.classList.toggle('selected', risultatiRicerca[i]?.id === selectedId);
         });
 
         const item = elementoSelezionato;
@@ -706,6 +1064,8 @@ async function fetchRecommendations(id) {
         } else {
             backdropImg.style.opacity = '0';
         }
+
+        fetchRecommendations(item.id);
     }
 
     function riproduciInPagina() {
@@ -728,19 +1088,35 @@ async function fetchRecommendations(id) {
         window.open(url, '_blank');
     }
     async function showTrailer() {
-    if (!elementoSelezionato) return alert("Seleziona prima un titolo");
-    const res = await fetch(`https://api.themoviedb.org/3/${currentType}/${elementoSelezionato.id}/videos?api_key=${API_KEY}`);
-    const data = await res.json();
-    const trailer = data.results.find(v => v.type === "Trailer");
-    if (trailer) {
-        document.getElementById('trailerFrame').src = `https://www.youtube.com/embed/${trailer.key}`;
-        document.getElementById('trailerModal').style.display = 'flex';
-    } else { alert("Trailer non disponibile"); }
-}
+        if (!elementoSelezionato) return alert("Seleziona prima un titolo");
+        try {
+            const res = await fetch(`https://api.themoviedb.org/3/${currentType}/${elementoSelezionato.id}/videos?api_key=${API_KEY}&language=it-IT`);
+            if (!res.ok) {
+                alert("Impossibile caricare il trailer.");
+                return;
+            }
+            const data = await res.json();
+            const trailer = (data.results || []).find(v => v.type === "Trailer" && v.site === "YouTube");
+            if (trailer) {
+                document.getElementById('trailerFrame').src = `https://www.youtube.com/embed/${trailer.key}`;
+                document.getElementById('trailerModal').classList.add('is-open');
+            } else {
+                alert("Trailer non disponibile");
+            }
+        } catch {
+            alert("Errore di connessione durante il caricamento del trailer.");
+        }
+    }
+
+    function chiudiTrailerModal() {
+        const modal = document.getElementById('trailerModal');
+        modal.classList.remove('is-open');
+        document.getElementById('trailerFrame').src = '';
+    }
 </script>
-<div id="trailerModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; justify-content:center; align-items:center;">
-    <button onclick="document.getElementById('trailerModal').style.display='none'; document.getElementById('trailerFrame').src=''" style="position:absolute; top:20px; right:20px; cursor:pointer;">CHIUDI</button>
-    <iframe id="trailerFrame" width="80%" height="80%" frameborder="0" allowfullscreen></iframe>
+<div id="trailerModal" class="trailer-modal" role="dialog" aria-modal="true" aria-label="Anteprima trailer">
+    <button type="button" class="trailer-modal-close" onclick="chiudiTrailerModal()">CHIUDI</button>
+    <iframe id="trailerFrame" class="trailer-modal-frame" width="80%" height="80%" frameborder="0" allowfullscreen></iframe>
 </div>
 </body>
 </html>
