@@ -3,268 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caponioflix</title>
+    <title>Caponioflix Premium</title>
     <style>
         :root {
-            --bg-color: #0f0f11;
-            --card-bg: #1a1a1e;
-            --list-bg: #141417;
-            --text-color: #f0f0f2;
-            --text-muted: #a0a0aa;
-            --accent-green: #22c55e;
-            --border-color: #27272a;
+            --bg-color: #141414;
+            --card-bg: #1f1f1f;
+            --accent: #e50914; /* Rosso stile Netflix */
+            --text-color: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
             min-height: 100vh;
-            padding: 20px;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .container {
-            width: 100%;
-            max-width: 900px;
-            background-color: var(--bg-color);
-            border-radius: 12px;
-            padding: 20px;
+        /* SFONDO DINAMICO (Backdrop sfocato) */
+        .backdrop-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-size: cover;
+            background-position: center top;
+            filter: brightness(0.25) blur(8px);
+            z-index: -1;
+            transition: background-image 0.5s ease-in-out;
         }
 
-        .logo-container {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .app-logo {
-            max-width: 180px;
-            height: auto;
-            display: block;
+        .main-layout {
+            max-width: 1400px;
             margin: 0 auto;
-            border-radius: 8px;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        h1 {
-            text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #ffffff;
+        /* HEADER / NAVBAR */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent);
             letter-spacing: 1px;
             text-transform: uppercase;
         }
 
-        .type-selector {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 15px;
-        }
-
-        .type-selector label {
-            cursor: pointer;
-            font-weight: bold;
-            color: var(--text-muted);
+        /* CONTROLLI DI RICERCA */
+        .controls-bar {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .type-selector {
+            display: flex;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .type-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: bold;
+            cursor: pointer;
             border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .type-btn.active {
+            background: var(--accent);
+            color: #fff;
         }
 
         .search-box {
             display: flex;
             gap: 10px;
-            margin-bottom: 15px;
+            flex-grow: 1;
+            max-width: 500px;
         }
 
         input[type="text"], input[type="number"] {
-            background-color: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             color: var(--text-color);
             padding: 10px 14px;
             font-size: 1rem;
             outline: none;
+            transition: border-color 0.2s;
         }
 
-        /* Gestione Evidenziazione per Telecomando Fire TV */
-        button:focus, 
-        input:focus, 
-        .type-selector label:focus-within {
-            outline: 3px solid #ffffff !important;
-            border-color: #ffffff !important;
+        input[type="text"] { flex-grow: 1; }
+
+        .btn-action {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
         }
 
-        .search-box input[type="text"] {
+        /* SEZIONE HERO (Dettagli Elemento Selezionato) */
+        .hero-section {
+            display: flex;
+            gap: 30px;
+            background: rgba(20, 20, 20, 0.7);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            min-height: 220px;
+            align-items: center;
+        }
+
+        .hero-poster {
+            width: 140px;
+            height: 210px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+            flex-shrink: 0;
+        }
+
+        .hero-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             flex-grow: 1;
         }
 
-        button {
-            background-color: #ffffff;
-            color: #000000;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
+        .hero-title {
+            font-size: 1.8rem;
+            font-weight: 700;
         }
 
-        .episodes-frame {
-            display: none;
-            background-color: var(--card-bg);
-            padding: 12px;
-            border-radius: 8px;
-            justify-content: center;
-            align-items: center;
+        .hero-meta {
+            display: flex;
             gap: 15px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-        }
-
-        .episodes-frame.active {
-            display: flex;
-        }
-
-        .episodes-frame input {
-            width: 60px;
-            text-align: center;
-        }
-
-        /* Griglia dei risultati con locandine */
-        .results-list {
-            background-color: var(--list-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            max-height: 420px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            padding: 10px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 12px;
-        }
-
-        /* Card elemento con copertina */
-        .result-item-btn {
-            background: var(--card-bg);
-            color: var(--text-color);
-            border: 2px solid transparent;
-            border-radius: 8px;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
 
-        .poster-img {
-            width: 100%;
-            height: 170px;
-            object-fit: cover;
-            border-radius: 6px;
-            background-color: #27272a;
-            margin-bottom: 8px;
-            pointer-events: none;
-        }
-
-        .item-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            line-height: 1.2;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+        .hero-overview {
+            font-size: 0.95rem;
+            color: #ccc;
+            line-height: 1.4;
+            max-height: 80px;
             overflow: hidden;
-            pointer-events: none;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
         }
 
-        .result-item-btn:focus {
-            background-color: #3f3f46 !important;
-            border-color: #ffffff !important;
-            transform: scale(1.04);
+        .episodes-selector {
+            display: none;
+            gap: 15px;
+            align-items: center;
+            margin-top: 5px;
         }
 
-        .result-item-btn.selected {
-            border-color: var(--accent-green) !important;
-            background-color: #1c3829 !important;
+        .episodes-selector.active {
+            display: flex;
         }
 
-        .btn-open {
+        .episodes-selector input {
+            width: 70px;
+            text-align: center;
+        }
+
+        /* CARTA / CAROSELLO RISULTATI */
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+            max-height: 480px;
+            overflow-y: auto;
+            padding: 10px 4px;
+        }
+
+        /* Tessere con Focus per Fire TV */
+        .card-item {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .card-img {
             width: 100%;
-            background-color: var(--accent-green);
-            color: #ffffff;
-            margin-bottom: 20px;
-            padding: 14px;
-            font-size: 1.1rem;
+            height: 225px;
+            object-fit: cover;
+            display: block;
         }
 
-        .btn-open:focus {
-            background-color: #16a34a !important;
+        .card-info {
+            padding: 10px;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* REGOLE DI FOCUS DEDICATE A FIRE TV (Telecomando D-Pad) */
+        button:focus, 
+        input:focus, 
+        .card-item:focus {
+            outline: none !important;
+            border-color: #ffffff !important;
+            transform: scale(1.08);
+            z-index: 10;
+            box-shadow: 0 10px 25px rgba(229, 9, 20, 0.5);
+        }
+
+        .card-item.selected {
+            border-color: var(--accent);
+        }
+
+        .btn-play-large {
+            background: var(--accent);
+            color: #fff;
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            margin-top: 10px;
         }
 
         .status-msg {
             grid-column: 1 / -1;
             text-align: center;
             color: var(--text-muted);
-            padding: 20px;
+            padding: 40px;
+            font-size: 1.1rem;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="logo-container">
-        <img src="logo.png" alt="Logo Caponioflix" class="app-logo">
+<div class="backdrop-bg" id="backdrop"></div>
+
+<div class="main-layout">
+    <header>
+        <div class="logo">CAPONIOFLIX</div>
+        <div class="controls-bar">
+            <div class="type-selector">
+                <button class="type-btn active" id="btnMovie" onclick="setType('movie')" tabindex="0">Film</button>
+                <button class="type-btn" id="btnTv" onclick="setType('tv')" tabindex="0">Serie TV</button>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Cerca un titolo..." onkeydown="if(event.key === 'Enter') cerca()" tabindex="0">
+                <button class="btn-action" onclick="cerca()" tabindex="0">Cerca</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SEZIONE HERO (Anteprima del contenuto selezionato) -->
+    <div class="hero-section" id="heroSection">
+        <img class="hero-poster" id="heroPoster" src="https://via.placeholder.com/185x278?text=Seleziona" alt="Poster">
+        <div class="hero-details">
+            <div class="hero-title" id="heroTitle">Seleziona un titolo</div>
+            <div class="hero-meta" id="heroMeta">---</div>
+            <div class="hero-overview" id="heroOverview">Cerca e seleziona un film o una serie TV per vedere i dettagli e avviarlo.</div>
+            
+            <div class="episodes-selector" id="episodesFrame">
+                <label>Stagione: <input type="number" id="seasonInput" value="1" min="1" tabindex="0"></label>
+                <label>Episodio: <input type="number" id="episodeInput" value="1" min="1" tabindex="0"></label>
+            </div>
+
+            <button class="btn-play-large" id="btnPlay" onclick="riproduciInPagina()" tabindex="0">
+                ▶ GUARDA ORA
+            </button>
+        </div>
     </div>
 
-    <h1></h1>
-
-    <div class="type-selector">
-        <label tabindex="0">
-            <input type="radio" name="searchType" value="movie" checked onchange="toggleType()"> Film
-        </label>
-        <label tabindex="0">
-            <input type="radio" name="searchType" value="tv" onchange="toggleType()"> Serie TV
-        </label>
+    <!-- LISTA RISULTATI -->
+    <div>
+        <div class="section-title">Risultati della ricerca</div>
+        <div class="results-grid" id="resultsList">
+            <div class="status-msg">Usa la barra sopra per cercare un contenuto.</div>
+        </div>
     </div>
-
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Cerca film o serie TV..." onkeydown="if(event.key === 'Enter') cerca()">
-        <button id="btnSearch" onclick="cerca()" tabindex="0">Cerca</button>
-    </div>
-
-    <div class="episodes-frame" id="episodesFrame">
-        <label>Stagione: <input type="number" id="seasonInput" value="1" min="1"></label>
-        <label>Episodio: <input type="number" id="episodeInput" value="1" min="1"></label>
-    </div>
-
-    <div class="results-list" id="resultsList">
-        <div class="status-msg">Effettua una ricerca...</div>
-    </div>
-
-    <button id="btnPlay" class="btn-open" onclick="riproduciInPagina()" tabindex="0">▶ Guarda Stream</button>
 </div>
 
 <script>
     const API_KEY = "19a3e7d1a5356e8daa2323dabc5e1a2d";
-
+    let currentType = 'movie';
     let risultatiRicerca = [];
     let elementoSelezionato = null;
 
-    function toggleType() {
-        const type = document.querySelector('input[name="searchType"]:checked').value;
+    function setType(type) {
+        currentType = type;
+        document.getElementById('btnMovie').classList.toggle('active', type === 'movie');
+        document.getElementById('btnTv').classList.toggle('active', type === 'tv');
+        
         const frame = document.getElementById('episodesFrame');
         if (type === 'tv') {
             frame.classList.add('active');
@@ -275,7 +359,6 @@
 
     async function cerca() {
         const query = document.getElementById('searchInput').value.trim();
-        const type = document.querySelector('input[name="searchType"]:checked').value;
         const listContainer = document.getElementById('resultsList');
 
         if (!query) return;
@@ -284,7 +367,7 @@
         risultatiRicerca = [];
         elementoSelezionato = null;
 
-        const url = `https://api.themoviedb.org/3/search/${type}?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=it-IT`;
+        const url = `https://api.themoviedb.org/3/search/${currentType}?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=it-IT`;
 
         try {
             const response = await fetch(url);
@@ -298,58 +381,88 @@
                 return;
             }
 
-            results.slice(0, 15).forEach((item, index) => {
+            results.slice(0, 18).forEach((item, index) => {
                 risultatiRicerca.push(item);
 
-                const nome = type === 'movie' ? item.title : item.name;
-                const dataUscita = type === 'movie' ? item.release_date : item.first_air_date;
-                const anno = dataUscita ? ` (${dataUscita.substring(0, 4)})` : '';
-                
+                const nome = currentType === 'movie' ? item.title : item.name;
                 const posterPath = item.poster_path 
-                    ? `https://image.tmdb.org/t/p/w185${item.poster_path}`
+                    ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
                     : 'https://via.placeholder.com/185x278?text=No+Cover';
 
-                const btn = document.createElement('button');
-                btn.className = 'result-item-btn';
-                btn.type = 'button';
-                btn.tabIndex = 0;
+                const card = document.createElement('div');
+                card.className = 'card-item';
+                card.tabIndex = 0; // Fondamentale per la navigazione con D-Pad
                 
-                btn.innerHTML = `
-                    <img class="poster-img" src="${posterPath}" alt="${nome}" />
-                    <span class="item-title">${nome}${anno}</span>
+                card.innerHTML = `
+                    <img class="card-img" src="${posterPath}" alt="${nome}" />
+                    <div class="card-info">
+                        <div class="card-title">${nome}</div>
+                    </div>
                 `;
-                
-                // Evento selezione sia su Click che su invio da telecomando
-                const seleziona = () => selezionaVoce(btn, index);
 
-                btn.onclick = seleziona;
-                btn.onkeydown = (e) => {
+                // Cambia anteprima al Focus (ideale per la TV mentre scorri coi tasti direzionali)
+                card.onfocus = () => aggiornaHero(index);
+                card.onclick = () => {
+                    aggiornaHero(index);
+                    document.getElementById('btnPlay').focus(); // Sposta subito il focus su Play
+                };
+
+                card.onkeydown = (e) => {
                     if (e.key === 'Enter' || e.keyCode === 13) {
-                        seleziona();
+                        aggiornaHero(index);
+                        document.getElementById('btnPlay').focus();
                     }
                 };
 
-                listContainer.appendChild(btn);
+                listContainer.appendChild(card);
             });
 
-            // FORZA IL FOCUS SULLA PRIMA CARD PER SBLOCCARE LA NAVIGAZIONE FIRE TV
+            // Focus automatico sulla prima card appena arrivano i risultati
             setTimeout(() => {
-                const primoElemento = listContainer.querySelector('.result-item-btn');
-                if (primoElemento) {
-                    primoElemento.focus();
-                    selezionaVoce(primoElemento, 0);
+                const primaCard = listContainer.querySelector('.card-item');
+                if (primaCard) {
+                    primaCard.focus();
+                    aggiornaHero(0);
                 }
-            }, 150);
+            }, 100);
 
         } catch (err) {
             listContainer.innerHTML = `<div class="status-msg">Errore: ${err.message}</div>`;
         }
     }
 
-    function selezionaVoce(element, index) {
-        document.querySelectorAll('.result-item-btn').forEach(el => el.classList.remove('selected'));
-        element.classList.add('selected');
+    function aggiornaHero(index) {
         elementoSelezionato = risultatiRicerca[index];
+        if (!elementoSelezionato) return;
+
+        // Evidenzia visivamente la card
+        document.querySelectorAll('.card-item').forEach((el, i) => {
+            el.classList.toggle('selected', i === index);
+        });
+
+        const item = elementoSelezionato;
+        const nome = currentType === 'movie' ? item.title : item.name;
+        const dataUscita = currentType === 'movie' ? item.release_date : item.first_air_date;
+        const anno = dataUscita ? dataUscita.substring(0, 4) : 'N/D';
+        const voto = item.vote_average ? `★ ${item.vote_average.toFixed(1)}/10` : '';
+
+        // Aggiorna Sezione Hero
+        document.getElementById('heroTitle').innerText = nome;
+        document.getElementById('heroMeta').innerText = `${anno} • ${voto}`;
+        document.getElementById('heroOverview').innerText = item.overview || 'Nessuna descrizione disponibile.';
+
+        const posterPath = item.poster_path 
+            ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+            : 'https://via.placeholder.com/185x278?text=No+Cover';
+        document.getElementById('heroPoster').src = posterPath;
+
+        // Sfondo dinamico sfocato (Backdrop TMDB)
+        const backdropEl = document.getElementById('backdrop');
+        if (item.backdrop_path) {
+            backdropEl.style.backgroundImage = `url('https://image.tmdb.org/t/p/w1280${item.backdrop_path}')`;
+        } else {
+            backdropEl.style.backgroundImage = 'none';
+        }
     }
 
     function riproduciInPagina() {
@@ -358,11 +471,10 @@
             return;
         }
 
-        const type = document.querySelector('input[name="searchType"]:checked').value;
         const tmdbId = elementoSelezionato.id;
         let url = "";
 
-        if (type === 'movie') {
+        if (currentType === 'movie') {
             url = `https://vixsrc.to/movie/${tmdbId}/`;
         } else {
             const season = document.getElementById('seasonInput').value || '1';
