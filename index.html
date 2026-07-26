@@ -96,7 +96,7 @@
             outline: none;
         }
 
-        /* Gestione focus visivo per Fire TV */
+        /* Gestione Evidenziazione per Telecomando Fire TV */
         button:focus, 
         input:focus, 
         .type-selector label:focus-within {
@@ -154,7 +154,7 @@
             gap: 12px;
         }
 
-        /* Card del singolo film / serie */
+        /* Card elemento con copertina */
         .result-item-btn {
             background: var(--card-bg);
             color: var(--text-color);
@@ -176,6 +176,7 @@
             border-radius: 6px;
             background-color: #27272a;
             margin-bottom: 8px;
+            pointer-events: none;
         }
 
         .item-title {
@@ -186,12 +187,13 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            pointer-events: none;
         }
 
         .result-item-btn:focus {
             background-color: #3f3f46 !important;
             border-color: #ffffff !important;
-            transform: scale(1.03);
+            transform: scale(1.04);
         }
 
         .result-item-btn.selected {
@@ -227,7 +229,7 @@
         <img src="logo.png" alt="Logo Caponioflix" class="app-logo">
     </div>
 
-    <h1></h1>
+    <h1>Caponioflix</h1>
 
     <div class="type-selector">
         <label tabindex="0">
@@ -240,7 +242,7 @@
 
     <div class="search-box">
         <input type="text" id="searchInput" placeholder="Cerca film o serie TV..." onkeydown="if(event.key === 'Enter') cerca()">
-        <button onclick="cerca()" tabindex="0">Cerca</button>
+        <button id="btnSearch" onclick="cerca()" tabindex="0">Cerca</button>
     </div>
 
     <div class="episodes-frame" id="episodesFrame">
@@ -252,7 +254,7 @@
         <div class="status-msg">Effettua una ricerca...</div>
     </div>
 
-    <button class="btn-open" onclick="riproduciInPagina()" tabindex="0">▶ Guarda Stream</button>
+    <button id="btnPlay" class="btn-open" onclick="riproduciInPagina()" tabindex="0">▶ Guarda Stream</button>
 </div>
 
 <script>
@@ -303,7 +305,6 @@
                 const dataUscita = type === 'movie' ? item.release_date : item.first_air_date;
                 const anno = dataUscita ? ` (${dataUscita.substring(0, 4)})` : '';
                 
-                // URL della locandina TMDB (w185 = dimensione ottima per le card)
                 const posterPath = item.poster_path 
                     ? `https://image.tmdb.org/t/p/w185${item.poster_path}`
                     : 'https://via.placeholder.com/185x278?text=No+Cover';
@@ -318,12 +319,27 @@
                     <span class="item-title">${nome}${anno}</span>
                 `;
                 
-                btn.onclick = () => {
-                    selezionaVoce(btn, index);
+                // Evento selezione sia su Click che su invio da telecomando
+                const seleziona = () => selezionaVoce(btn, index);
+
+                btn.onclick = seleziona;
+                btn.onkeydown = (e) => {
+                    if (e.key === 'Enter' || e.keyCode === 13) {
+                        seleziona();
+                    }
                 };
 
                 listContainer.appendChild(btn);
             });
+
+            // FORZA IL FOCUS SULLA PRIMA CARD PER SBLOCCARE LA NAVIGAZIONE FIRE TV
+            setTimeout(() => {
+                const primoElemento = listContainer.querySelector('.result-item-btn');
+                if (primoElemento) {
+                    primoElemento.focus();
+                    selezionaVoce(primoElemento, 0);
+                }
+            }, 150);
 
         } catch (err) {
             listContainer.innerHTML = `<div class="status-msg">Errore: ${err.message}</div>`;
