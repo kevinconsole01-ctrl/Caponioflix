@@ -2,128 +2,708 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caponioflix Premium</title>
+    <link rel="icon" type="image/png" href="Nuovo progetto (1).png">
     <style>
-        /* --- STILI PREMIUM & ANIMAZIONI --- */
         :root {
             --bg-color: #141414;
             --card-bg: #1f1f1f;
-            --accent: #e50914;
+            --accent: #e50914; /* Rosso stile Netflix */
             --text-color: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
         }
 
-        body { background-color: var(--bg-color); color: var(--text-color); font-family: sans-serif; margin: 0; }
-
-        /* Effetto Sfondo Dinamico */
-        #backdropContainer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
-        #backdropImg { width: 100%; height: 100%; object-fit: cover; filter: blur(15px) brightness(0.3); transition: opacity 0.8s ease-in-out; opacity: 0; }
-        
-        .container { padding: 20px; max-width: 1200px; margin: auto; }
-
-        /* Animazione card */
-        .card { 
-            background: var(--card-bg); border-radius: 8px; cursor: pointer; 
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        .card:hover { transform: scale(1.1); box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 10; }
-        
-        /* Layout Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
-        
-        button { cursor: pointer; padding: 10px 20px; background: var(--accent); color: white; border: none; border-radius: 4px; }
-        input { padding: 10px; border-radius: 4px; border: none; }
+
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* SFONDO DINAMICO (GESTITO VIA IMG HTML PER MAX COMPATIBILITÀ CHROME) */
+        #backdropContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        #backdropImg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(10px) brightness(0.4);
+            transform: scale(1.1); /* Evita bordi sfocati bianchi ai lati */
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+
+        /* SFUMATURA SCURA IN SOVRAPPOSIZIONE PER LA LEGGIBILITÀ */
+        .backdrop-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(180deg, rgba(20,20,20,0.4) 0%, rgba(20,20,20,0.85) 60%, #141414 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .main-layout {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* HEADER / NAVBAR */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            width: 100%;
+        }
+
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .app-logo {
+            max-height: 40px;
+            width: auto;
+            max-width: 160px;
+            object-fit: contain;
+        }
+
+        .logo-fallback {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* CONTROLLI DI RICERCA */
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .type-selector {
+            display: flex;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 8px;
+            padding: 3px;
+            border: 1px solid var(--border-color);
+        }
+
+        .type-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .type-btn.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        input[type="text"], input[type="number"] {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+        }
+
+        input[type="text"] { 
+            flex-grow: 1; 
+            min-width: 0;
+        }
+
+        .btn-action {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 18px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* SEZIONE HERO */
+        .hero-section {
+            display: flex;
+            gap: 20px;
+            background: rgba(20, 20, 20, 0.65);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            width: 100%;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-poster {
+            width: 130px;
+            height: 195px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+            flex-shrink: 0;
+        }
+
+        .hero-details {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .hero-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            word-wrap: break-word;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .hero-overview {
+            font-size: 0.9rem;
+            color: #ccc;
+            line-height: 1.4;
+            max-height: 70px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .episodes-selector {
+            display: none;
+            gap: 10px;
+            align-items: center;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+        .episodes-selector.active {
+            display: flex;
+        }
+
+        .episodes-selector input {
+            width: 65px;
+            text-align: center;
+        }
+
+        /* RISULTATI / POPOLARI */
+        .section-title {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            max-height: 520px;
+            overflow-y: auto;
+            padding: 4px;
+            width: 100%;
+        }
+
+        .card-item {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 175px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-info {
+            padding: 8px;
+        }
+
+        .card-title {
+            font-size: 0.8rem;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        button:focus, 
+        input:focus, 
+        .card-item:focus {
+            outline: none !important;
+            border-color: #ffffff !important;
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.5);
+        }
+
+        .card-item.selected {
+            border-color: var(--accent);
+        }
+
+        .btn-play-large {
+            background: var(--accent);
+            color: #fff;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: fit-content;
+            margin-top: 5px;
+        }
+
+        .load-more-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .btn-load-more {
+            background: #2b2b2b;
+            color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 10px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-load-more:hover {
+            background: #3a3a3a;
+        }
+
+        .status-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-muted);
+            padding: 30px;
+            font-size: 0.95rem;
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 600px) {
+            .main-layout {
+                padding: 12px;
+                gap: 15px;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .logo-wrapper {
+                justify-content: center;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .type-selector {
+                width: 100%;
+            }
+
+            .type-btn {
+                flex: 1;
+                text-align: center;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .hero-section {
+                flex-direction: column;
+                text-align: center;
+                padding: 16px;
+            }
+
+            .hero-poster {
+                width: 110px;
+                height: 165px;
+            }
+
+            .hero-details {
+                align-items: center;
+                width: 100%;
+            }
+
+            .hero-title {
+                font-size: 1.3rem;
+            }
+
+            .btn-play-large {
+                width: 100%;
+            }
+
+            .episodes-selector {
+                justify-content: center;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
+            }
+
+            .card-img {
+                height: 145px;
+            }
+        }
     </style>
 </head>
 <body>
 
+<!-- STRUTTURA PER LO SFONDO DINAMICO -->
 <div id="backdropContainer">
-    <img id="backdropImg" src="">
+    <img id="backdropImg" src="" alt="Backdrop">
 </div>
+<div class="backdrop-overlay"></div>
 
-<div class="container">
-    <header style="display:flex; gap: 10px; margin-bottom: 20px;">
-        <input type="text" id="searchInput" placeholder="Cerca film o serie...">
-        <button onclick="cerca()">Cerca</button>
-        <button onclick="changeType('movie')">Film</button>
-        <button onclick="changeType('tv')">Serie TV</button>
+<div class="main-layout">
+    <header>
+        <div class="logo-wrapper">
+            <img src="./logo.png" alt="Caponioflix" class="app-logo" id="logoImg" onerror="handleLogoError()">
+            <span class="logo-fallback" id="logoText" style="display: none;">CAPONIOFLIX</span>
+        </div>
+
+        <div class="controls-bar">
+            <div class="type-selector">
+                <button class="type-btn active" id="btnMovie" onclick="setType('movie')" tabindex="0">Film</button>
+                <button class="type-btn" id="btnTv" onclick="setType('tv')" tabindex="0">Serie TV</button>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Cerca titolo..." onkeydown="if(event.key === 'Enter') cerca(true)" tabindex="0">
+                <button class="btn-action" onclick="cerca(true)" tabindex="0">Cerca</button>
+            </div>
+        </div>
     </header>
 
-    <div id="hero" style="margin-bottom: 40px;">
-        <h1 id="title">Benvenuto su Caponioflix</h1>
-        <p id="overview"></p>
-        <button onclick="riproduci()">▶ GUARDA ORA</button>
+    <!-- SEZIONE HERO -->
+    <div class="hero-section" id="heroSection">
+        <img class="hero-poster" id="heroPoster" src="https://via.placeholder.com/185x278?text=Caricamento..." alt="Poster">
+        <div class="hero-details">
+            <div class="hero-title" id="heroTitle">Caricamento...</div>
+            <div class="hero-meta" id="heroMeta">---</div>
+            <div class="hero-overview" id="heroOverview">...</div>
+            
+            <div class="episodes-selector" id="episodesFrame">
+                <label>Stagione: <input type="number" id="seasonInput" value="1" min="1" tabindex="0"></label>
+                <label>Episodio: <input type="number" id="episodeInput" value="1" min="1" tabindex="0"></label>
+            </div>
+
+            <button class="btn-play-large" id="btnPlay" onclick="riproduciInPagina()" tabindex="0">
+                ▶ GUARDA ORA
+            </button>
+        </div>
     </div>
 
-    <div class="grid" id="results"></div>
+    <!-- LISTA RISULTATI / POPOLARI -->
+    <div>
+        <div class="section-title" id="gridTitle">Popolari del momento</div>
+        <div class="results-grid" id="resultsList">
+            <div class="status-msg">Caricamento contenuti in corso...</div>
+        </div>
+        <div class="load-more-container">
+            <button class="btn-load-more" id="btnLoadMore" onclick="caricaAltriRisultati()" style="display: none;" tabindex="0">
+                ➕ CARICA ALTRI TITOLI
+            </button>
+        </div>
+    </div>
 </div>
 
 <script>
     const API_KEY = "19a3e7d1a5356e8daa2323dabc5e1a2d";
     let currentType = 'movie';
-    let currentItems = [];
+    let risultatiRicerca = [];
+    let elementoSelezionato = null;
+    let currentPage = 1;
+    let isSearchMode = false;
 
-    // Funzione principale di ricerca
-    async function cerca() {
-        const query = document.getElementById('searchInput').value;
-        const url = query 
-            ? `https://api.themoviedb.org/3/search/${currentType}?api_key=${API_KEY}&query=${query}&language=it-IT`
-            : `https://api.themoviedb.org/3/trending/${currentType}/week?api_key=${API_KEY}&language=it-IT`;
-        
-        const res = await fetch(url);
-        const data = await res.json();
-        renderizza(data.results);
+    window.onload = () => {
+        caricaPopolari(true);
+    };
+
+    function handleLogoError() {
+        document.getElementById('logoImg').style.display = 'none';
+        document.getElementById('logoText').style.display = 'inline-block';
     }
 
-    // Funzione per cambiare tipo (Film/TV)
-    function changeType(type) {
+    function setType(type) {
         currentType = type;
-        cerca();
+        document.getElementById('btnMovie').classList.toggle('active', type === 'movie');
+        document.getElementById('btnTv').classList.toggle('active', type === 'tv');
+        
+        const frame = document.getElementById('episodesFrame');
+        if (type === 'tv') {
+            frame.classList.add('active');
+        } else {
+            frame.classList.remove('active');
+        }
+
+        const query = document.getElementById('searchInput').value.trim();
+        if (!query) {
+            caricaPopolari(true);
+        } else {
+            cerca(true);
+        }
     }
 
-    // Rendering dei risultati
-    function renderizza(items) {
-        currentItems = items;
-        const grid = document.getElementById('results');
-        grid.innerHTML = '';
+    async function caricaPopolari(reset = false) {
+        isSearchMode = false;
+        if (reset) {
+            currentPage = 1;
+            risultatiRicerca = [];
+            document.getElementById('resultsList').innerHTML = '<div class="status-msg">Caricamento in corso...</div>';
+        }
+        document.getElementById('gridTitle').innerText = `Popolari del momento (${currentType === 'movie' ? 'Film' : 'Serie TV'})`;
+
+        await fetchEPopola(`https://api.themoviedb.org/3/trending/${currentType}/week?api_key=${API_KEY}&language=it-IT&page=${currentPage}`, reset);
+        currentPage++;
+        await fetchEPopola(`https://api.themoviedb.org/3/trending/${currentType}/week?api_key=${API_KEY}&language=it-IT&page=${currentPage}`, false);
         
-        items.forEach((item, index) => {
-            if(!item.poster_path) return;
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.onclick = () => seleziona(index);
-            div.innerHTML = `<img src="https://image.tmdb.org/t/p/w300${item.poster_path}" style="width:100%; border-radius:8px;">`;
-            grid.appendChild(div);
+        document.getElementById('btnLoadMore').style.display = 'block';
+    }
+
+    async function cerca(reset = false) {
+        const query = document.getElementById('searchInput').value.trim();
+
+        if (!query) {
+            caricaPopolari(true);
+            return;
+        }
+
+        isSearchMode = true;
+        if (reset) {
+            currentPage = 1;
+            risultatiRicerca = [];
+            document.getElementById('resultsList').innerHTML = '<div class="status-msg">Ricerca in corso...</div>';
+        }
+        document.getElementById('gridTitle').innerText = "Risultati della ricerca";
+
+        const baseUrl = `https://api.themoviedb.org/3/search/${currentType}?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=it-IT`;
+        
+        await fetchEPopola(`${baseUrl}&page=${currentPage}`, reset);
+        currentPage++;
+        await fetchEPopola(`${baseUrl}&page=${currentPage}`, false);
+
+        document.getElementById('btnLoadMore').style.display = 'block';
+    }
+
+    function caricaAltriRisultati() {
+        currentPage++;
+        if (isSearchMode) {
+            const query = document.getElementById('searchInput').value.trim();
+            const url = `https://api.themoviedb.org/3/search/${currentType}?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=it-IT&page=${currentPage}`;
+            fetchEPopola(url, false);
+        } else {
+            const url = `https://api.themoviedb.org/3/trending/${currentType}/week?api_key=${API_KEY}&language=it-IT&page=${currentPage}`;
+            fetchEPopola(url, false);
+        }
+    }
+
+    async function fetchEPopola(url, resetGrid = false) {
+        const listContainer = document.getElementById('resultsList');
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            const results = data.results || [];
+
+            if (resetGrid) {
+                listContainer.innerHTML = '';
+            }
+
+            if (results.length === 0 && risultatiRicerca.length === 0) {
+                listContainer.innerHTML = '<div class="status-msg">Nessun contenuto trovato.</div>';
+                document.getElementById('btnLoadMore').style.display = 'none';
+                return;
+            }
+
+            const startIndex = risultatiRicerca.length;
+
+            results.forEach((item) => {
+                risultatiRicerca.push(item);
+                const currentIndex = risultatiRicerca.length - 1;
+
+                const nome = currentType === 'movie' ? item.title : item.name;
+                const posterPath = item.poster_path 
+                    ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+                    : 'https://via.placeholder.com/185x278?text=No+Cover';
+
+                const card = document.createElement('div');
+                card.className = 'card-item';
+                card.tabIndex = 0;
+                
+                card.innerHTML = `
+                    <img class="card-img" src="${posterPath}" alt="${nome}" />
+                    <div class="card-info">
+                        <div class="card-title">${nome}</div>
+                    </div>
+                `;
+
+                card.onfocus = () => aggiornaHero(currentIndex);
+                card.onclick = () => {
+                    aggiornaHero(currentIndex);
+                    document.getElementById('btnPlay').focus();
+                };
+
+                card.onkeydown = (e) => {
+                    if (e.key === 'Enter' || e.keyCode === 13) {
+                        aggiornaHero(currentIndex);
+                        document.getElementById('btnPlay').focus();
+                    }
+                };
+
+                listContainer.appendChild(card);
+            });
+
+            if (startIndex === 0 && risultatiRicerca.length > 0) {
+                aggiornaHero(0);
+            }
+
+        } catch (err) {
+            if (risultatiRicerca.length === 0) {
+                listContainer.innerHTML = `<div class="status-msg">Errore di connessione: ${err.message}</div>`;
+            }
+        }
+    }
+
+    function aggiornaHero(index) {
+        elementoSelezionato = risultatiRicerca[index];
+        if (!elementoSelezionato) return;
+
+        document.querySelectorAll('.card-item').forEach((el, i) => {
+            el.classList.toggle('selected', i === index);
         });
-        if(items.length > 0) seleziona(0);
+
+        const item = elementoSelezionato;
+        const nome = currentType === 'movie' ? item.title : item.name;
+        const dataUscita = currentType === 'movie' ? item.release_date : item.first_air_date;
+        const anno = dataUscita ? dataUscita.substring(0, 4) : 'N/D';
+        const voto = item.vote_average ? `★ ${item.vote_average.toFixed(1)}/10` : '';
+
+        document.getElementById('heroTitle').innerText = nome;
+        document.getElementById('heroMeta').innerText = `${anno} • ${voto}`;
+        document.getElementById('heroOverview').innerText = item.overview || 'Nessuna descrizione disponibile.';
+
+        const posterPath = item.poster_path 
+            ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+            : 'https://via.placeholder.com/185x278?text=No+Cover';
+        document.getElementById('heroPoster').src = posterPath;
+
+        // CARICAMENTO SFONDO IN TAG <img>
+        const backdropImg = document.getElementById('backdropImg');
+        const bgPath = item.backdrop_path || item.poster_path;
+
+        if (bgPath) {
+            const imgUrl = `https://image.tmdb.org/t/p/w1280${bgPath}`;
+            backdropImg.onload = () => {
+                backdropImg.style.opacity = '1';
+            };
+            backdropImg.src = imgUrl;
+        } else {
+            backdropImg.style.opacity = '0';
+        }
     }
 
-    // Gestione selezione e sfondo
-    function seleziona(index) {
-        const item = currentItems[index];
-        document.getElementById('title').innerText = item.title || item.name;
-        document.getElementById('overview').innerText = item.overview;
-        
-        const img = document.getElementById('backdropImg');
-        img.style.opacity = '0';
-        setTimeout(() => {
-            img.src = `https://image.tmdb.org/t/p/original${item.backdrop_path || item.poster_path}`;
-            img.style.opacity = '1';
-        }, 300);
-    }
+    function riproduciInPagina() {
+        if (!elementoSelezionato) {
+            alert("Seleziona prima un elemento!");
+            return;
+        }
 
-    // Riproduzione
-    function riproduci() {
-        if(currentItems.length === 0) return;
-        const id = currentItems[0].id;
-        const url = currentType === 'movie' 
-            ? `https://vixsrc.to/movie/${id}/` 
-            : `https://vixsrc.to/tv/${id}/1/1/`;
+        const tmdbId = elementoSelezionato.id;
+        let url = "";
+
+        if (currentType === 'movie') {
+            url = `https://vixsrc.to/movie/${tmdbId}/`;
+        } else {
+            const season = document.getElementById('seasonInput').value || '1';
+            const episode = document.getElementById('episodeInput').value || '1';
+            url = `https://vixsrc.to/tv/${tmdbId}/${season}/${episode}/`;
+        }
+
         window.open(url, '_blank');
     }
-
-    // Avvio automatico
-    cerca();
 </script>
 
 </body>
