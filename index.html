@@ -2,7 +2,6 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport ottimizzato per bloccare lo scorrimento orizzontale su mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caponioflix Premium</title>
     <style>
@@ -26,7 +25,7 @@
         html, body {
             width: 100%;
             max-width: 100%;
-            overflow-x: hidden; /* Blocca definitivamente lo scorrimento orizzontale */
+            overflow-x: hidden;
             background-color: var(--bg-color);
             color: var(--text-color);
             min-height: 100vh;
@@ -67,7 +66,6 @@
             width: 100%;
         }
 
-        /* Contenitore Logo con fallback testo */
         .logo-wrapper {
             display: flex;
             align-items: center;
@@ -140,7 +138,7 @@
 
         input[type="text"] { 
             flex-grow: 1; 
-            min-width: 0; /* Previene overflow del campo input */
+            min-width: 0;
         }
 
         .btn-action {
@@ -155,7 +153,7 @@
             flex-shrink: 0;
         }
 
-        /* SEZIONE HERO (Dettagli Elemento Selezionato) */
+        /* SEZIONE HERO */
         .hero-section {
             display: flex;
             gap: 20px;
@@ -182,7 +180,7 @@
             flex-direction: column;
             gap: 10px;
             flex-grow: 1;
-            min-width: 0; /* Permette il truncate corretto del testo */
+            min-width: 0;
         }
 
         .hero-title {
@@ -227,7 +225,7 @@
             text-align: center;
         }
 
-        /* RISULTATI */
+        /* RISULTATI / POPOLARI */
         .section-title {
             font-size: 1.1rem;
             margin-bottom: 12px;
@@ -236,7 +234,6 @@
 
         .results-grid {
             display: grid;
-            /* Griglia pienamente reattiva */
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 12px;
             max-height: 480px;
@@ -273,7 +270,6 @@
             text-overflow: ellipsis;
         }
 
-        /* REGOLE DI FOCUS DEDICATE A FIRE TV E TOUCH */
         button:focus, 
         input:focus, 
         .card-item:focus {
@@ -313,9 +309,7 @@
             font-size: 0.95rem;
         }
 
-        /* =========================================================
-           STILI ADATTIVI PER SMARTPHONE E TABLET (MOBILE RESPONSIVE)
-           ========================================================= */
+        /* MOBILE RESPONSIVE */
         @media (max-width: 600px) {
             .main-layout {
                 padding: 12px;
@@ -371,7 +365,7 @@
             }
 
             .btn-play-large {
-                width: 100%; /* Pulsante a tutta larghezza per facilitare il tocco su mobile */
+                width: 100%;
             }
 
             .episodes-selector {
@@ -379,7 +373,6 @@
             }
 
             .results-grid {
-                /* Riduce le colonne su telefoni stretti per mostrare 2-3 locandine perfette per riga */
                 grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
                 gap: 8px;
             }
@@ -397,7 +390,6 @@
 <div class="main-layout">
     <header>
         <div class="logo-wrapper">
-            <!-- Tenta di caricare logo.png, se fallisce passa al testo 'CAPONIOFLIX' -->
             <img src="logo.png" alt="Caponioflix" class="app-logo" id="logoImg" onerror="handleLogoError()">
             <span class="logo-fallback" id="logoText" style="display: none;">CAPONIOFLIX</span>
         </div>
@@ -417,11 +409,11 @@
 
     <!-- SEZIONE HERO -->
     <div class="hero-section" id="heroSection">
-        <img class="hero-poster" id="heroPoster" src="https://via.placeholder.com/185x278?text=Seleziona" alt="Poster">
+        <img class="hero-poster" id="heroPoster" src="https://via.placeholder.com/185x278?text=Caricamento..." alt="Poster">
         <div class="hero-details">
-            <div class="hero-title" id="heroTitle">Seleziona un titolo</div>
+            <div class="hero-title" id="heroTitle">Caricamento...</div>
             <div class="hero-meta" id="heroMeta">---</div>
-            <div class="hero-overview" id="heroOverview">Cerca e seleziona un contenuto per vederne i dettagli e avviarlo.</div>
+            <div class="hero-overview" id="heroOverview">...</div>
             
             <div class="episodes-selector" id="episodesFrame">
                 <label>Stagione: <input type="number" id="seasonInput" value="1" min="1" tabindex="0"></label>
@@ -434,11 +426,11 @@
         </div>
     </div>
 
-    <!-- LISTA RISULTATI -->
+    <!-- LISTA RISULTATI / POPOLARI -->
     <div>
-        <div class="section-title">Risultati della ricerca</div>
+        <div class="section-title" id="gridTitle">Popolari del momento</div>
         <div class="results-grid" id="resultsList">
-            <div class="status-msg">Usa la barra sopra per cercare un contenuto.</div>
+            <div class="status-msg">Caricamento contenuti in corso...</div>
         </div>
     </div>
 </div>
@@ -449,7 +441,11 @@
     let risultatiRicerca = [];
     let elementoSelezionato = null;
 
-    // Gestione errore caricamento logo
+    // Caricamento automatico al primo avvio
+    window.onload = () => {
+        caricaPopolari();
+    };
+
     function handleLogoError() {
         document.getElementById('logoImg').style.display = 'none';
         document.getElementById('logoText').style.display = 'inline-block';
@@ -466,19 +462,45 @@
         } else {
             frame.classList.remove('active');
         }
+
+        // Se il campo di ricerca è vuoto, quando si cambia scheda mostriamo i popolari di quella categoria
+        const query = document.getElementById('searchInput').value.trim();
+        if (!query) {
+            caricaPopolari();
+        } else {
+            cerca();
+        }
     }
 
+    // Funzione per caricare i Popolari/Trend del momento
+    async function caricaPopolari() {
+        const listContainer = document.getElementById('resultsList');
+        document.getElementById('gridTitle').innerText = `Popolari del momento (${currentType === 'movie' ? 'Film' : 'Serie TV'})`;
+        listContainer.innerHTML = '<div class="status-msg">Caricamento in corso...</div>';
+
+        const url = `https://api.themoviedb.org/3/trending/${currentType}/week?api_key=${API_KEY}&language=it-IT`;
+        await eseguiFetchEPopola(url);
+    }
+
+    // Funzione per la ricerca guidata dall'utente
     async function cerca() {
         const query = document.getElementById('searchInput').value.trim();
+
+        if (!query) {
+            caricaPopolari();
+            return;
+        }
+
+        document.getElementById('gridTitle').innerText = "Risultati della ricerca";
+        const url = `https://api.themoviedb.org/3/search/${currentType}?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=it-IT`;
+        await eseguiFetchEPopola(url);
+    }
+
+    // Logica condivisa per renderizzare le schede
+    async function eseguiFetchEPopola(url) {
         const listContainer = document.getElementById('resultsList');
-
-        if (!query) return;
-
-        listContainer.innerHTML = '<div class="status-msg">Ricerca in corso...</div>';
         risultatiRicerca = [];
         elementoSelezionato = null;
-
-        const url = `https://api.themoviedb.org/3/search/${currentType}?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=it-IT`;
 
         try {
             const response = await fetch(url);
@@ -488,7 +510,7 @@
             listContainer.innerHTML = '';
 
             if (results.length === 0) {
-                listContainer.innerHTML = '<div class="status-msg">Nessun risultato trovato.</div>';
+                listContainer.innerHTML = '<div class="status-msg">Nessun contenuto trovato.</div>';
                 return;
             }
 
@@ -527,16 +549,16 @@
                 listContainer.appendChild(card);
             });
 
+            // Seleziona automaticamente il primo elemento della lista
             setTimeout(() => {
                 const primaCard = listContainer.querySelector('.card-item');
                 if (primaCard) {
-                    primaCard.focus();
                     aggiornaHero(0);
                 }
-            }, 100);
+            }, 50);
 
         } catch (err) {
-            listContainer.innerHTML = `<div class="status-msg">Errore: ${err.message}</div>`;
+            listContainer.innerHTML = `<div class="status-msg">Errore di connessione: ${err.message}</div>`;
         }
     }
 
@@ -573,7 +595,7 @@
 
     function riproduciInPagina() {
         if (!elementoSelezionato) {
-            alert("Seleziona prima un elemento dalla lista!");
+            alert("Seleziona prima un elemento!");
             return;
         }
 
