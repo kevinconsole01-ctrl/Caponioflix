@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VixSrc Search Engine</title>
+    <title>Caponioflix</title>
     <style>
         :root {
-            --bg-color: #1e1e2e;
-            --card-bg: #313244;
-            --list-bg: #181825;
-            --text-color: #cdd6f4;
-            --text-muted: #bac2de;
-            --accent-blue: #89b4fa;
-            --accent-green: #a6e3a1;
-            --border-color: #45475a;
+            --bg-color: #0f0f11;
+            --card-bg: #1a1a1e;
+            --list-bg: #141417;
+            --text-color: #f0f0f2;
+            --text-muted: #a0a0aa;
+            --accent-black: #27272a;
+            --accent-hover: #3f3f46;
+            --accent-border: #52525b;
+            --accent-green: #22c55e;
+            --accent-green-hover: #16a34a;
+            --border-color: #27272a;
         }
 
         * {
@@ -41,25 +44,26 @@
             padding: 20px;
         }
 
-        /* STILI PER IL LOGO */
         .logo-container {
             text-align: center;
             margin-bottom: 15px;
         }
 
         .app-logo {
-            max-width: 180px; /* Regola la larghezza massima del tuo logo */
+            max-width: 180px;
             height: auto;
             display: block;
             margin: 0 auto;
-            border-radius: 8px; /* Arrotonda gli angoli se l'immagine è squadrata */
+            border-radius: 8px;
         }
 
         h1 {
             text-align: center;
             font-size: 1.5rem;
             margin-bottom: 20px;
-            color: var(--accent-blue);
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .type-selector {
@@ -96,7 +100,7 @@
         }
 
         input[type="text"]:focus, input[type="number"]:focus {
-            border-color: var(--accent-blue);
+            border-color: #ffffff;
         }
 
         .search-box input[type="text"] {
@@ -104,8 +108,8 @@
         }
 
         button {
-            background-color: var(--accent-blue);
-            color: #11111b;
+            background-color: #ffffff;
+            color: #000000;
             border: none;
             border-radius: 8px;
             padding: 10px 20px;
@@ -116,12 +120,12 @@
         }
 
         button:focus, .result-item:focus, input:focus, .type-selector label:focus-within {
-            outline: 3px solid var(--accent-blue);
+            outline: 3px solid #ffffff;
             outline-offset: 2px;
         }
 
         button:hover {
-            background-color: #b4befe;
+            background-color: #e4e4e7;
         }
 
         .episodes-frame {
@@ -133,6 +137,7 @@
             align-items: center;
             gap: 15px;
             margin-bottom: 15px;
+            border: 1px solid var(--border-color);
         }
 
         .episodes-frame.active {
@@ -157,7 +162,7 @@
             padding: 12px 15px;
             border-bottom: 1px solid var(--card-bg);
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, color 0.2s;
         }
 
         .result-item:last-child {
@@ -166,18 +171,19 @@
 
         .result-item:hover, .result-item.selected {
             background-color: var(--card-bg);
-            color: var(--accent-blue);
+            color: #ffffff;
+            font-weight: bold;
         }
 
         .btn-open {
             width: 100%;
             background-color: var(--accent-green);
-            color: #11111b;
+            color: #ffffff;
             margin-bottom: 20px;
         }
 
         .btn-open:hover {
-            background-color: #89dceb;
+            background-color: var(--accent-green-hover);
         }
 
         .player-wrapper {
@@ -187,7 +193,7 @@
             height: 0;
             overflow: hidden;
             border-radius: 12px;
-            background-color: #000;
+            background-color: #000000;
             border: 2px solid var(--border-color);
             margin-top: 10px;
         }
@@ -209,13 +215,11 @@
 <body>
 
 <div class="container">
-    <!-- CONTENITORE LOGO -->
     <div class="logo-container">
-        <!-- Sostituisci "logo.png" con il percorso o il link (URL) del tuo logo -->
-      <img src="logo.png" alt="Logo" class="app-logo">
+        <img src="logo.png" alt="Logo Caponioflix" class="app-logo">
     </div>
 
-    <h1></h1>
+    <h1>Caponioflix</h1>
 
     <div class="type-selector">
         <label>
@@ -240,7 +244,7 @@
         <div class="result-item" style="color: var(--text-muted); cursor: default;">Effettua una ricerca...</div>
     </div>
 
-    <button class="btn-open" onclick="riproduciInPagina()" tabindex="0">▶ Guarda ora </button>
+    <button class="btn-open" onclick="riproduciInPagina()" tabindex="0">▶ Guarda Nella Stessa Pagina</button>
 
     <div class="player-wrapper" id="playerWrapper">
         <iframe id="videoPlayer" allowfullscreen scrolling="no"></iframe>
@@ -299,7 +303,7 @@
                 div.className = 'result-item';
                 div.tabIndex = 0;
                 div.innerText = `${nome}${anno}`;
-
+                
                 div.onclick = () => {
                     selezionaVoce(div, index);
                     riproduciInPagina();
@@ -314,7 +318,7 @@
                 listContainer.appendChild(div);
             });
 
-        } catch (err) {https://upload.wikimedia.org/wikipedia/commons/e/ea/Netflix_Logomark.png
+        } catch (err) {
             listContainer.innerHTML = `<div class="result-item">Errore: ${err.message}</div>`;
         }
     }
