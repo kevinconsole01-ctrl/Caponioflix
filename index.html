@@ -11,9 +11,6 @@
             --list-bg: #141417;
             --text-color: #f0f0f2;
             --text-muted: #a0a0aa;
-            --accent-black: #27272a;
-            --accent-hover: #3f3f46;
-            --accent-border: #52525b;
             --accent-green: #22c55e;
             --accent-green-hover: #16a34a;
             --border-color: #27272a;
@@ -80,6 +77,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
         }
 
         .search-box {
@@ -96,11 +95,18 @@
             padding: 10px 14px;
             font-size: 1rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
 
-        input[type="text"]:focus, input[type="number"]:focus {
-            border-color: #ffffff;
+        /* Evidenziazione per telecomando Fire TV */
+        button:focus, 
+        .result-item:focus, 
+        input:focus, 
+        .type-selector label:focus-within {
+            outline: 3px solid #ffffff !important;
+            background-color: #3f3f46 !important;
+            color: #ffffff !important;
+            border-color: #ffffff !important;
         }
 
         .search-box input[type="text"] {
@@ -117,15 +123,6 @@
             font-size: 1rem;
             cursor: pointer;
             transition: background-color 0.2s;
-        }
-
-        button:focus, .result-item:focus, input:focus, .type-selector label:focus-within {
-            outline: 3px solid #ffffff;
-            outline-offset: 2px;
-        }
-
-        button:hover {
-            background-color: #e4e4e7;
         }
 
         .episodes-frame {
@@ -153,7 +150,7 @@
             background-color: var(--list-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
             margin-bottom: 15px;
         }
@@ -163,15 +160,16 @@
             border-bottom: 1px solid var(--card-bg);
             cursor: pointer;
             transition: background-color 0.2s, color 0.2s;
+            outline: none;
         }
 
         .result-item:last-child {
             border-bottom: none;
         }
 
-        .result-item:hover, .result-item.selected {
-            background-color: var(--card-bg);
-            color: #ffffff;
+        .result-item.selected {
+            background-color: var(--accent-green) !important;
+            color: #ffffff !important;
             font-weight: bold;
         }
 
@@ -180,35 +178,6 @@
             background-color: var(--accent-green);
             color: #ffffff;
             margin-bottom: 20px;
-        }
-
-        .btn-open:hover {
-            background-color: var(--accent-green-hover);
-        }
-
-        .player-wrapper {
-            display: none;
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 12px;
-            background-color: #000000;
-            border: 2px solid var(--border-color);
-            margin-top: 10px;
-        }
-
-        .player-wrapper.active {
-            display: block;
-        }
-
-        .player-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
         }
     </style>
 </head>
@@ -222,10 +191,10 @@
     <h1></h1>
 
     <div class="type-selector">
-        <label>
+        <label tabindex="0">
             <input type="radio" name="searchType" value="movie" checked onchange="toggleType()"> Film
         </label>
-        <label>
+        <label tabindex="0">
             <input type="radio" name="searchType" value="tv" onchange="toggleType()"> Serie TV
         </label>
     </div>
@@ -236,8 +205,8 @@
     </div>
 
     <div class="episodes-frame" id="episodesFrame">
-        <label>Stagione: <input type="number" id="seasonInput" value="1" min="1" onchange="aggiornaVideoSeAttivo()"></label>
-        <label>Episodio: <input type="number" id="episodeInput" value="1" min="1" onchange="aggiornaVideoSeAttivo()"></label>
+        <label>Stagione: <input type="number" id="seasonInput" value="1" min="1"></label>
+        <label>Episodio: <input type="number" id="episodeInput" value="1" min="1"></label>
     </div>
 
     <div class="results-list" id="resultsList">
@@ -245,10 +214,6 @@
     </div>
 
     <button class="btn-open" onclick="riproduciInPagina()" tabindex="0">▶ Guarda Stream</button>
-
-    <div class="player-wrapper" id="playerWrapper">
-        <iframe id="videoPlayer" allowfullscreen scrolling="no"></iframe>
-    </div>
 </div>
 
 <script>
@@ -301,17 +266,21 @@
 
                 const div = document.createElement('div');
                 div.className = 'result-item';
-                div.tabIndex = 0;
+                
+                // RENDIAMO L'ELEMENTO SELEZIONABILE DAL TELECOMANDO FIRE TV
+                div.setAttribute('tabindex', '0'); 
                 div.innerText = `${nome}${anno}`;
                 
-                div.onclick = () => {
+                // Funzione di selezione
+                const seleziona = () => {
                     selezionaVoce(div, index);
-                    riproduciInPagina();
                 };
+
+                // Click o Pressione tasto OK / Enter del telecomando
+                div.onclick = seleziona;
                 div.onkeydown = (e) => {
-                    if (e.key === 'Enter') {
-                        selezionaVoce(div, index);
-                        riproduciInPagina();
+                    if (e.key === 'Enter' || e.keyCode === 13) {
+                        seleziona();
                     }
                 };
 
@@ -347,15 +316,7 @@
             url = `https://vixsrc.to/tv/${tmdbId}/${season}/${episode}/`;
         }
 
-        // Apre il link direttamente nel browser della TV evitando il blocco della WebView
         window.open(url, '_blank');
-    }
-
-    function aggiornaVideoSeAttivo() {
-        const wrapper = document.getElementById('playerWrapper');
-        if (wrapper.classList.contains('active') && elementoSelezionato) {
-            riproduciInPagina();
-        }
     }
 </script>
 
