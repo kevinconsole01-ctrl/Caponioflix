@@ -2,7 +2,8 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Viewport ottimizzato per bloccare lo scorrimento orizzontale su mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caponioflix Premium</title>
     <style>
         :root {
@@ -19,15 +20,16 @@
             margin: 0;
             padding: 0;
             font-family: 'Helvetica Neue', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden; /* Blocca definitivamente lo scorrimento orizzontale */
             background-color: var(--bg-color);
             color: var(--text-color);
             min-height: 100vh;
-            overflow-x: hidden; /* Blocca qualsiasi overflow orizzontale imprevisto */
-            display: flex;
-            flex-direction: column;
         }
 
         /* SFONDO DINAMICO (Backdrop sfocato) */
@@ -45,9 +47,9 @@
         }
 
         .main-layout {
+            width: 100%;
             max-width: 1400px;
             margin: 0 auto;
-            width: 100%;
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -60,42 +62,55 @@
             align-items: center;
             justify-content: space-between;
             gap: 15px;
-            padding-bottom: 20px;
+            padding-bottom: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            flex-wrap: wrap; /* Permette di andare a capo su mobile */
+            width: 100%;
+        }
+
+        /* Contenitore Logo con fallback testo */
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
         }
 
         .app-logo {
-            max-height: 45px;
+            max-height: 40px;
             width: auto;
-            display: block;
+            max-width: 160px;
             object-fit: contain;
-            border-radius: 6px;
+        }
+
+        .logo-fallback {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         /* CONTROLLI DI RICERCA */
         .controls-bar {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
-            width: auto;
         }
 
         .type-selector {
             display: flex;
             background: rgba(0, 0, 0, 0.5);
             border-radius: 8px;
-            padding: 4px;
+            padding: 3px;
             border: 1px solid var(--border-color);
         }
 
         .type-btn {
-            padding: 8px 16px;
+            padding: 8px 14px;
             background: transparent;
             border: none;
             color: var(--text-muted);
             font-weight: bold;
+            font-size: 0.9rem;
             cursor: pointer;
             border-radius: 6px;
             transition: all 0.2s;
@@ -110,7 +125,6 @@
             display: flex;
             gap: 8px;
             flex-grow: 1;
-            max-width: 500px;
         }
 
         input[type="text"], input[type="number"] {
@@ -118,43 +132,45 @@
             border: 1px solid var(--border-color);
             border-radius: 6px;
             color: var(--text-color);
-            padding: 10px 14px;
-            font-size: 1rem;
+            padding: 10px 12px;
+            font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s;
             width: 100%;
         }
 
-        input[type="text"] { flex-grow: 1; }
+        input[type="text"] { 
+            flex-grow: 1; 
+            min-width: 0; /* Previene overflow del campo input */
+        }
 
         .btn-action {
             background: var(--accent);
             color: white;
             border: none;
             border-radius: 6px;
-            padding: 10px 20px;
+            padding: 10px 18px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         /* SEZIONE HERO (Dettagli Elemento Selezionato) */
         .hero-section {
             display: flex;
-            gap: 24px;
-            background: rgba(20, 20, 20, 0.7);
+            gap: 20px;
+            background: rgba(20, 20, 20, 0.75);
             border-radius: 12px;
-            padding: 24px;
+            padding: 20px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            min-height: 220px;
+            width: 100%;
             align-items: center;
         }
 
         .hero-poster {
-            width: 140px;
-            height: 210px;
+            width: 130px;
+            height: 195px;
             object-fit: cover;
             border-radius: 8px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.6);
@@ -164,38 +180,39 @@
         .hero-details {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             flex-grow: 1;
+            min-width: 0; /* Permette il truncate corretto del testo */
         }
 
         .hero-title {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
+            word-wrap: break-word;
         }
 
         .hero-meta {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
         }
 
         .hero-overview {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #ccc;
             line-height: 1.4;
-            max-height: 80px;
+            max-height: 70px;
             overflow: hidden;
-            text-overflow: ellipsis;
             display: -webkit-box;
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
         }
 
         .episodes-selector {
             display: none;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
             margin-top: 5px;
             flex-wrap: wrap;
@@ -206,40 +223,40 @@
         }
 
         .episodes-selector input {
-            width: 70px;
+            width: 65px;
             text-align: center;
         }
 
         /* RISULTATI */
         .section-title {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
             font-weight: 600;
         }
 
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 14px;
-            max-height: 500px;
+            /* Griglia pienamente reattiva */
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            max-height: 480px;
             overflow-y: auto;
-            padding: 10px 4px;
+            padding: 4px;
+            width: 100%;
         }
 
-        /* Tessere con Focus per Fire TV e Touch per Mobile */
         .card-item {
             background: var(--card-bg);
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-            position: relative;
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
 
         .card-img {
             width: 100%;
-            height: 190px;
+            height: 175px;
             object-fit: cover;
             display: block;
         }
@@ -249,14 +266,14 @@
         }
 
         .card-title {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: bold;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        /* REGOLE DI FOCUS DEDICATE A FIRE TV */
+        /* REGOLE DI FOCUS DEDICATE A FIRE TV E TOUCH */
         button:focus, 
         input:focus, 
         .card-item:focus {
@@ -264,7 +281,7 @@
             border-color: #ffffff !important;
             transform: scale(1.05);
             z-index: 10;
-            box-shadow: 0 10px 25px rgba(229, 9, 20, 0.5);
+            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.5);
         }
 
         .card-item.selected {
@@ -274,8 +291,8 @@
         .btn-play-large {
             background: var(--accent);
             color: #fff;
-            padding: 12px 28px;
-            font-size: 1.1rem;
+            padding: 12px 24px;
+            font-size: 1rem;
             font-weight: bold;
             border: none;
             border-radius: 6px;
@@ -285,21 +302,21 @@
             justify-content: center;
             gap: 8px;
             width: fit-content;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .status-msg {
             grid-column: 1 / -1;
             text-align: center;
             color: var(--text-muted);
-            padding: 40px;
-            font-size: 1rem;
+            padding: 30px;
+            font-size: 0.95rem;
         }
 
         /* =========================================================
-           ADATTAMENTO MOBILE E TABLET (MEDIA QUERIES)
+           STILI ADATTIVI PER SMARTPHONE E TABLET (MOBILE RESPONSIVE)
            ========================================================= */
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
             .main-layout {
                 padding: 12px;
                 gap: 15px;
@@ -307,22 +324,21 @@
 
             header {
                 flex-direction: column;
-                align-items: center;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .logo-wrapper {
+                justify-content: center;
             }
 
             .controls-bar {
-                width: 100%;
                 flex-direction: column;
-            }
-
-            .search-box {
                 width: 100%;
-                max-width: none;
             }
 
             .type-selector {
                 width: 100%;
-                justify-content: center;
             }
 
             .type-btn {
@@ -330,16 +346,19 @@
                 text-align: center;
             }
 
+            .search-box {
+                width: 100%;
+            }
+
             .hero-section {
                 flex-direction: column;
                 text-align: center;
                 padding: 16px;
-                align-items: center;
             }
 
             .hero-poster {
-                width: 120px;
-                height: 180px;
+                width: 110px;
+                height: 165px;
             }
 
             .hero-details {
@@ -348,11 +367,11 @@
             }
 
             .hero-title {
-                font-size: 1.4rem;
+                font-size: 1.3rem;
             }
 
             .btn-play-large {
-                width: 100%; /* Su mobile il pulsante prende tutta la larghezza */
+                width: 100%; /* Pulsante a tutta larghezza per facilitare il tocco su mobile */
             }
 
             .episodes-selector {
@@ -360,12 +379,13 @@
             }
 
             .results-grid {
-                grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
-                gap: 10px;
+                /* Riduce le colonne su telefoni stretti per mostrare 2-3 locandine perfette per riga */
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
             }
 
             .card-img {
-                height: 155px;
+                height: 145px;
             }
         }
     </style>
@@ -376,7 +396,12 @@
 
 <div class="main-layout">
     <header>
-        <img src="logo.png" alt="Caponioflix Logo" class="app-logo">
+        <div class="logo-wrapper">
+            <!-- Tenta di caricare logo.png, se fallisce passa al testo 'CAPONIOFLIX' -->
+            <img src="logo.png" alt="Caponioflix" class="app-logo" id="logoImg" onerror="handleLogoError()">
+            <span class="logo-fallback" id="logoText" style="display: none;">CAPONIOFLIX</span>
+        </div>
+
         <div class="controls-bar">
             <div class="type-selector">
                 <button class="type-btn active" id="btnMovie" onclick="setType('movie')" tabindex="0">Film</button>
@@ -384,7 +409,7 @@
             </div>
             
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Cerca un titolo..." onkeydown="if(event.key === 'Enter') cerca()" tabindex="0">
+                <input type="text" id="searchInput" placeholder="Cerca titolo..." onkeydown="if(event.key === 'Enter') cerca()" tabindex="0">
                 <button class="btn-action" onclick="cerca()" tabindex="0">Cerca</button>
             </div>
         </div>
@@ -396,7 +421,7 @@
         <div class="hero-details">
             <div class="hero-title" id="heroTitle">Seleziona un titolo</div>
             <div class="hero-meta" id="heroMeta">---</div>
-            <div class="hero-overview" id="heroOverview">Cerca e seleziona un film o una serie TV per vedere i dettagli e avviarlo.</div>
+            <div class="hero-overview" id="heroOverview">Cerca e seleziona un contenuto per vederne i dettagli e avviarlo.</div>
             
             <div class="episodes-selector" id="episodesFrame">
                 <label>Stagione: <input type="number" id="seasonInput" value="1" min="1" tabindex="0"></label>
@@ -423,6 +448,12 @@
     let currentType = 'movie';
     let risultatiRicerca = [];
     let elementoSelezionato = null;
+
+    // Gestione errore caricamento logo
+    function handleLogoError() {
+        document.getElementById('logoImg').style.display = 'none';
+        document.getElementById('logoText').style.display = 'inline-block';
+    }
 
     function setType(type) {
         currentType = type;
