@@ -1103,10 +1103,34 @@
             }
         }
 
+        .recs-toggle {
+            display: none;
+        }
+
         @media (max-width: 600px) {
             .main-layout {
                 padding: 12px;
                 gap: 15px;
+            }
+
+            .recs-toggle {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                background: rgba(255, 255, 255, 0.12);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                color: #fff;
+                border-radius: 999px;
+                padding: 6px 12px;
+                font-size: 0.78rem;
+                font-weight: 700;
+                cursor: pointer;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            #recsGrid.is-collapsed {
+                display: none;
             }
 
             header {
@@ -1120,8 +1144,23 @@
             }
 
             .controls-bar {
-                flex-direction: column;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 8px;
                 width: 100%;
+            }
+
+            .sidebar-toggle {
+                width: 34px;
+                height: 34px;
+                flex-shrink: 0;
+            }
+
+            .controls-bar .view-btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+                flex: 1 1 auto;
             }
 
             .type-selector {
@@ -1135,6 +1174,8 @@
 
             .search-box {
                 width: 100%;
+                flex-basis: 100%;
+                order: 10;
             }
 
             .hero-section {
@@ -1299,7 +1340,10 @@
                 </div>
 
                 <div style="min-width:0;">
-                    <div class="section-title" id="recsTitle" style="display:none; margin-bottom:10px;">Potrebbe piacerti anche</div>
+                    <div class="recs-header" id="recsHeader" style="display:none; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+                        <div class="section-title" id="recsTitle" style="margin:0;">Potrebbe piacerti anche</div>
+                        <button class="recs-toggle" id="recsToggleBtn" type="button" onclick="toggleRecs()" aria-expanded="true">Nascondi ▴</button>
+                    </div>
                     <div id="recsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(90px, 1fr)); gap:8px; width:100%;"></div>
                 </div>
             </div>
@@ -1723,24 +1767,39 @@
         clearTimeout(debounceTimer);
         cerca(true);
     }
+function setRecsCollapsed(collapsed) {
+    const grid = document.getElementById('recsGrid');
+    const btn = document.getElementById('recsToggleBtn');
+    if (!grid || !btn) return;
+    grid.classList.toggle('is-collapsed', collapsed);
+    grid.style.display = collapsed ? 'none' : 'grid';
+    btn.textContent = collapsed ? 'Mostra ▾' : 'Nascondi ▴';
+    btn.setAttribute('aria-expanded', String(!collapsed));
+}
+
+function toggleRecs() {
+    const grid = document.getElementById('recsGrid');
+    setRecsCollapsed(!grid.classList.contains('is-collapsed'));
+}
+
 async function fetchRecommendations(id, mediaType = currentType) {
     const grid = document.getElementById('recsGrid');
-    const titleEl = document.getElementById('recsTitle');
+    const headerEl = document.getElementById('recsHeader');
     try {
         const res = await fetch(`https://api.themoviedb.org/3/${mediaType}/${id}/recommendations?api_key=${API_KEY}&language=it-IT`);
         if (!res.ok) {
-            titleEl.style.display = 'none';
+            headerEl.style.display = 'none';
             grid.innerHTML = '';
             return;
         }
         const data = await res.json();
         const results = (data.results || []).slice(0, 8);
         if (results.length === 0) {
-            titleEl.style.display = 'none';
+            headerEl.style.display = 'none';
             grid.innerHTML = '';
             return;
         }
-        titleEl.style.display = 'block';
+        headerEl.style.display = 'flex';
         grid.innerHTML = '';
         results.forEach(item => {
             const posterPath = item.poster_path
@@ -1759,8 +1818,9 @@ async function fetchRecommendations(id, mediaType = currentType) {
             card.onclick = () => selezionaItem(item);
             grid.appendChild(card);
         });
+        setRecsCollapsed(window.innerWidth <= 600);
     } catch {
-        titleEl.style.display = 'none';
+        headerEl.style.display = 'none';
         grid.innerHTML = '';
     }
 }
