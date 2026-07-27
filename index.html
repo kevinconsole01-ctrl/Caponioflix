@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caponioflix Premium</title>
     <link rel="icon" type="image/png" href="Nuovo progetto (1).png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #141414;
@@ -27,13 +30,57 @@
             width: 100%;
             max-width: 100%;
             overflow-x: hidden;
-            background-color: var(--bg-color);
             color: var(--text-color);
             min-height: 100vh;
             position: relative;
         }
 
-        /* SFONDO DINAMICO (GESTITO VIA IMG HTML PER MAX COMPATIBILITÀ CHROMEE) */
+        html, body {
+            background-color: transparent;
+        }
+
+        .main-layout {
+            background-color: transparent;
+        }
+
+        #splashScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-color, #141414);
+            transition: opacity 0.5s ease-out;
+        }
+
+        #splashScreen.is-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #splashScreen .splash-logo {
+            max-width: 220px;
+            width: 60vw;
+            height: auto;
+            object-fit: contain;
+            animation: splashPulse 1.6s ease-in-out infinite;
+        }
+
+        #splashScreen .splash-logo-fallback {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: splashPulse 1.6s ease-in-out infinite;
+        }
+
+        @keyframes splashPulse {
+            0%, 100% { opacity: 0.55; transform: scale(0.96); }
+            50% { opacity: 1; transform: scale(1.04); }
+        }
+
         #backdropContainer {
             position: fixed;
             inset: 0;
@@ -48,12 +95,11 @@
             height: 100%;
             object-fit: cover;
             filter: blur(16px) brightness(0.45) saturate(0.9);
-            transform: scale(1.12); /* Evita bordi sfocati bianchi ai lati */
+            transform: scale(1.12);
             transition: opacity 0.45s ease-in-out;
             opacity: 0;
         }
 
-        /* SFUMATURA SCURA IN SOVRAPPOSIZIONE PER LA LEGGIBILITÀ */
         .backdrop-overlay {
             position: fixed;
             inset: 0;
@@ -151,7 +197,6 @@
             display: none;
         }
 
-        /* HEADER / NAVBAR */
         header {
             display: flex;
             align-items: center;
@@ -188,7 +233,6 @@
             text-transform: uppercase;
         }
 
-        /* CONTROLLI DI RICERCA */
         .controls-bar {
             display: flex;
             align-items: center;
@@ -265,9 +309,7 @@
             white-space: nowrap;
             flex-shrink: 0;
         }
-        
 
-        /* SEZIONE HERO */
         .hero-section {
             display: grid;
             grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
@@ -341,7 +383,7 @@
             border-color: #fff;
         }
 
-        .btn-favorites-view {
+        .view-btn {
             background: rgba(255, 255, 255, 0.12);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.18);
@@ -350,6 +392,17 @@
             font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .view-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .view-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
         }
 
         .favorites-section {
@@ -411,8 +464,10 @@
 
         .hero-title {
             font-size: 1.6rem;
-            font-weight: 700;
+            font-weight: 400;
             word-wrap: break-word;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.02em;
         }
 
         .hero-meta {
@@ -457,11 +512,12 @@
             min-width: 90px;
         }
 
-        /* RISULTATI / POPOLARI */
         .section-title {
             font-size: 1.1rem;
             margin-bottom: 12px;
-            font-weight: 600;
+            font-weight: 400;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.03em;
         }
 
         .section-block {
@@ -480,16 +536,25 @@
         }
 
         .rec-card {
-            transform: none;
+            /* transform inherited from .card-item */
         }
 
         .card-item {
             background: var(--card-bg);
             border-radius: 8px;
-            overflow: hidden;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: transform 0.2s ease, border-color 0.2s ease;
+            position: relative;
+            will-change: transform;
+            transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                        border-color 0.25s ease,
+                        box-shadow 0.25s ease,
+                        z-index 0s;
+        }
+
+        .card-item .card-img {
+            border-radius: 6px 6px 0 0;
+            overflow: hidden;
         }
 
         .card-img {
@@ -610,15 +675,9 @@
             box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.45);
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         @keyframes heroFade {
@@ -661,12 +720,15 @@
         }
 
         .card-item {
-            animation: fadeInUp 0.4s ease-out both;
+            transform: translateY(10px);
+            animation: fadeIn 0.4s ease-out both;
         }
 
         .card-item:hover:not(:focus) {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+            transform: scale(1.08);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            z-index: 5;
+            border-color: rgba(255, 255, 255, 0.12);
         }
 
         .btn-action,
@@ -724,6 +786,8 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            overflow-y: auto;
+            cursor: pointer;
         }
 
         .overview-modal.is-open {
@@ -741,6 +805,16 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
             position: relative;
             animation: modalContentIn 0.3s ease-out;
+            cursor: default;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 600px) {
+            .overview-modal-card {
+                padding: 16px;
+                max-height: 85vh;
+            }
         }
 
         .overview-modal-title {
@@ -769,37 +843,37 @@
 
         .overview-modal-cast {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 6px;
             margin-top: 8px;
         }
 
         .overview-modal-actor {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             align-items: flex-start;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 10px;
-            padding: 8px;
+            border-radius: 6px;
+            padding: 4px;
         }
 
         .overview-modal-actor img {
             width: 100%;
-            height: 160px;
+            height: 70px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 4px;
             display: block;
         }
 
         .overview-modal-actor-name {
             font-weight: 700;
-            font-size: 0.92rem;
+            font-size: 0.75rem;
         }
 
         .overview-modal-actor-role {
-            font-size: 0.82rem;
+            font-size: 0.65rem;
             color: var(--text-muted);
         }
 
@@ -881,6 +955,92 @@
             height: 46px;
             padding: 0;
             flex-shrink: 0;
+        }
+
+        /* PLATFORMS SECTION */
+        .platforms-section {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            padding: 4px 0;
+        }
+
+        .platforms-section.is-open {
+            display: flex;
+        }
+
+        .platform-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .platform-tab {
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .platform-tab:hover {
+            color: var(--text-color);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .platform-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            padding: 4px;
+            width: 100%;
+            align-items: start;
+        }
+
+        .platform-rank {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 900;
+            z-index: 2;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .platform-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .platform-logo {
+            height: 28px;
+            width: auto;
+            border-radius: 4px;
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -1041,12 +1201,29 @@
             .card-img {
                 height: 145px;
             }
+
+            .platform-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
+            }
+
+            .platform-tabs {
+                gap: 6px;
+            }
+
+            .platform-tab {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
 <body>
+<div id="splashScreen">
+    <img src="./logo.png" alt="Caponioflix" class="splash-logo" id="splashLogoImg" onerror="this.style.display='none'; document.getElementById('splashLogoFallback').style.display='block';">
+    <span class="splash-logo-fallback" id="splashLogoFallback" style="display:none;">CAPONIOFLIX</span>
+</div>
 
-<!-- STRUTTURA PER LO SFONDO DINAMICO -->
 <div id="backdropContainer">
     <img id="backdropImg" src="" alt="Backdrop">
 </div>
@@ -1063,10 +1240,11 @@
 
         <div class="controls-bar">
             <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Apri filtri" aria-expanded="false">☰</button>
-            <button class="btn-favorites-view" id="favoritesViewToggle" type="button" onclick="toggleFavoritesView()" tabindex="0">Preferiti</button>
+            <button class="view-btn active" id="homeViewBtn" type="button" onclick="setView('home')" tabindex="0">Home</button>
+            <button class="view-btn" id="favoritesViewBtn" type="button" onclick="setView('favorites')" tabindex="0">Preferiti</button>
+            <button class="view-btn" id="platformsViewBtn" type="button" onclick="setView('platforms')" tabindex="0">Top 10</button>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Digita per cercare..." oninput="onInputSearch()" onkeydown="if(event.key === 'Enter') cercaImmediata()" tabindex="0" autocomplete="off">
-                <button class="btn-action" type="button" onclick="cercaImmediata()" tabindex="0">Cerca</button>
             </div>
         </div>
     </header>
@@ -1092,7 +1270,6 @@
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <div class="content-stack">
-            <!-- SEZIONE HERO -->
             <div class="hero-section" id="heroSection">
                 <div style="display:flex; gap:20px; align-items:flex-start; min-width:0;">
                     <img class="hero-poster" id="heroPoster" src="https://via.placeholder.com/185x278?text=Caricamento..." alt="Poster">
@@ -1130,7 +1307,13 @@
                 <div class="section-title">Preferiti</div>
                 <div class="favorites-grid" id="favoritesGrid"></div>
             </div>
-            <!-- LISTA RISULTATI / POPOLARI -->
+            <div class="platforms-section" id="platformsSection">
+                <div class="section-title">Top 10 · Piattaforme Streaming</div>
+                <div class="platform-tabs" id="platformTabs"></div>
+                <div class="platform-grid" id="platformGrid">
+                    <div class="status-msg">Carica le classifiche delle piattaforme...</div>
+                </div>
+            </div>
             <div class="section-block" id="popularSection">
                 <div class="section-title" id="gridTitle">Popolari del momento</div>
                 <div class="results-grid" id="resultsList">
@@ -1159,6 +1342,18 @@
     let debounceTimer;
     let favorites = [];
     let currentView = 'home';
+
+    // Platform data: TMDB watch provider IDs (regione IT)
+    const PLATFORMS = [
+        { id: 8, name: 'Netflix', color: '#E50914', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg' },
+        { id: 337, name: 'Disney+', color: '#113CCF', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg' },
+        { id: 119, name: 'Amazon Prime', color: '#00A8E1', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg' },
+        { id: 2, name: 'Apple TV+', color: '#555555', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Apple_TV_%282015%29_logo.svg' },
+        { id: 531, name: 'Paramount+', color: '#0064FF', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Paramount%2B_logo.svg' }
+    ];
+
+    let currentPlatformId = PLATFORMS[0].id;
+    let platformDataCache = {};
 
     const GENRES_BY_TYPE = {
         movie: [
@@ -1334,27 +1529,135 @@
         });
     }
 
-    function toggleFavoritesView() {
-        currentView = currentView === 'home' ? 'favorites' : 'home';
-        const viewBtn = document.getElementById('favoritesViewToggle');
+    function setView(view) {
+        currentView = view;
+        
+        const homeBtn = document.getElementById('homeViewBtn');
+        const favoritesBtn = document.getElementById('favoritesViewBtn');
+        const platformsBtn = document.getElementById('platformsViewBtn');
         const favoritesSection = document.getElementById('favoritesSection');
         const popularSection = document.getElementById('popularSection');
+        const platformsSection = document.getElementById('platformsSection');
 
-        if (viewBtn) {
-            viewBtn.textContent = currentView === 'favorites' ? 'Home' : 'Preferiti';
+        // Update button states
+        [homeBtn, favoritesBtn, platformsBtn].forEach(btn => btn.classList.remove('active'));
+        
+        if (view === 'home') {
+            homeBtn.classList.add('active');
+        } else if (view === 'favorites') {
+            favoritesBtn.classList.add('active');
+        } else if (view === 'platforms') {
+            platformsBtn.classList.add('active');
         }
 
+        // Show/hide sections
         if (favoritesSection) {
-            favoritesSection.style.display = currentView === 'favorites' ? 'flex' : 'none';
+            favoritesSection.style.display = view === 'favorites' ? 'flex' : 'none';
         }
 
         if (popularSection) {
-            popularSection.style.display = currentView === 'favorites' ? 'none' : 'flex';
+            popularSection.style.display = (view === 'favorites' || view === 'platforms') ? 'none' : 'flex';
         }
 
-        if (currentView === 'favorites') {
-            renderFavoritesSection();
+        if (platformsSection) {
+            platformsSection.classList.toggle('is-open', view === 'platforms');
         }
+
+        // Load content for specific views
+        if (view === 'favorites') {
+            renderFavoritesSection();
+        } else if (view === 'platforms') {
+            renderPlatformTabs();
+            loadPlatformContent(currentPlatformId);
+        }
+    }
+
+    function renderPlatformTabs() {
+        const container = document.getElementById('platformTabs');
+        container.innerHTML = '';
+        PLATFORMS.forEach(platform => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'platform-tab' + (platform.id === currentPlatformId ? ' active' : '');
+            btn.textContent = platform.name;
+            btn.tabIndex = 0;
+            btn.onclick = () => {
+                currentPlatformId = platform.id;
+                renderPlatformTabs();
+                loadPlatformContent(platform.id);
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    async function loadPlatformContent(providerId) {
+        const grid = document.getElementById('platformGrid');
+        grid.innerHTML = '<div class="status-msg">Caricamento classifica...</div>';
+
+        const cacheKey = `${providerId}_${currentType}`;
+        if (platformDataCache[cacheKey]) {
+            renderPlatformGrid(platformDataCache[cacheKey]);
+            return;
+        }
+
+        try {
+            const url = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${API_KEY}&language=it-IT&sort_by=popularity.desc&with_watch_providers=${providerId}&watch_region=IT&vote_count.gte=10&page=1`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('API error');
+            const data = await res.json();
+            const results = (data.results || []).slice(0, 10);
+            platformDataCache[cacheKey] = results;
+            renderPlatformGrid(results);
+        } catch (err) {
+            grid.innerHTML = `<div class="status-msg">Errore nel caricamento: ${err.message}</div>`;
+        }
+    }
+
+    function renderPlatformGrid(items) {
+        const grid = document.getElementById('platformGrid');
+        if (!items.length) {
+            grid.innerHTML = '<div class="status-msg">Nessun titolo trovato per questa piattaforma.</div>';
+            return;
+        }
+
+        grid.innerHTML = '';
+        items.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'card-item';
+            card.tabIndex = 0;
+
+            const rank = document.createElement('div');
+            rank.className = 'platform-rank';
+            rank.textContent = index + 1;
+
+            const posterPath = item.poster_path
+                ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+                : 'https://via.placeholder.com/185x278?text=No+Cover';
+
+            const img = document.createElement('img');
+            img.className = 'card-img';
+            img.src = posterPath;
+            img.alt = currentType === 'movie' ? (item.title || '') : (item.name || '');
+
+            const cardInfo = document.createElement('div');
+            cardInfo.className = 'card-info';
+            const titleEl = document.createElement('div');
+            titleEl.className = 'card-title';
+            titleEl.textContent = currentType === 'movie' ? (item.title || '') : (item.name || '');
+
+            cardInfo.appendChild(titleEl);
+            card.appendChild(rank);
+            card.appendChild(img);
+            card.appendChild(cardInfo);
+
+            card.onclick = () => {
+                const idx = risultatiRicerca.length;
+                risultatiRicerca.push(item);
+                aggiornaHero(idx);
+            };
+
+            grid.appendChild(card);
+        });
     }
 
     function renderGenreTags() {
@@ -1537,6 +1840,8 @@ async function fetchRecommendations(id, mediaType = currentType) {
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        const overviewModal = document.getElementById('overviewModal');
+        const overviewModalCard = document.querySelector('.overview-modal-card');
         const recModal = document.getElementById('recModal');
         const recModalCard = document.querySelector('.rec-modal-card');
         const sidebar = document.getElementById('sidebar');
@@ -1571,6 +1876,18 @@ async function fetchRecommendations(id, mediaType = currentType) {
             }
         });
 
+        overviewModal.addEventListener('click', (event) => {
+            if (event.target === overviewModal) {
+                chiudiTramaModal();
+            }
+        });
+
+        if (overviewModalCard) {
+            overviewModalCard.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+        }
+
         recModal.addEventListener('click', (event) => {
             if (event.target === recModal) {
                 chiudiPopupConsigliato();
@@ -1581,11 +1898,25 @@ async function fetchRecommendations(id, mediaType = currentType) {
             event.stopPropagation();
         });
     });
+    function nascondiSplashScreen() {
+        const splash = document.getElementById('splashScreen');
+        if (!splash || splash.classList.contains('is-hidden')) return;
+        splash.classList.add('is-hidden');
+        setTimeout(() => splash.remove(), 600);
+    }
+
     window.onload = () => {
         loadFavorites();
         renderFavoritesSection();
         renderGenreTags();
-        caricaPopolari(true);
+
+        // Timeout di sicurezza: se il caricamento è lento, la splash sparisce comunque dopo 4s
+        const splashSafetyTimeout = setTimeout(nascondiSplashScreen, 4000);
+
+        caricaPopolari(true).finally(() => {
+            clearTimeout(splashSafetyTimeout);
+            nascondiSplashScreen();
+        });
     };
 
     function handleLogoError() {
@@ -1619,6 +1950,12 @@ async function fetchRecommendations(id, mediaType = currentType) {
             caricaPopolari(true);
         } else {
             cerca(true);
+        }
+
+        // Refresh platform data if visible
+        if (currentView === 'platforms') {
+            platformDataCache = {};
+            loadPlatformContent(currentPlatformId);
         }
     }
 
@@ -2027,11 +2364,6 @@ async function fetchRecommendations(id, mediaType = currentType) {
 
         const dominantColor = await estraiColoreDominante(posterPath);
         document.documentElement.style.setProperty('--bg-color', dominantColor);
-        document.body.style.backgroundColor = dominantColor;
-        document.body.style.backgroundImage = 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.10) 100%)';
-        document.body.style.backgroundAttachment = 'fixed';
-        document.body.style.backgroundRepeat = 'no-repeat';
-        document.body.style.backgroundSize = 'cover';
 
         const backdropImg = document.getElementById('backdropImg');
         const bgPath = elementoSelezionato.backdrop_path || elementoSelezionato.poster_path;
@@ -2107,11 +2439,6 @@ async function fetchRecommendations(id, mediaType = currentType) {
 
         const dominantColor = await estraiColoreDominante(posterPath);
         document.documentElement.style.setProperty('--bg-color', dominantColor);
-        document.body.style.backgroundColor = dominantColor;
-        document.body.style.backgroundImage = 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.10) 100%)';
-        document.body.style.backgroundAttachment = 'fixed';
-        document.body.style.backgroundRepeat = 'no-repeat';
-        document.body.style.backgroundSize = 'cover';
 
         const backdropImg = document.getElementById('backdropImg');
         const bgPath = item.backdrop_path || item.poster_path;
@@ -2147,7 +2474,7 @@ async function fetchRecommendations(id, mediaType = currentType) {
             link.click();
             link.remove();
         } catch {
-            alert('Impossibile aprire il link automaticamente. Copia l’indirizzo manualmente.');
+            alert('Impossibile aprire il link automaticamente. Copia l\'indirizzo manualmente.');
         }
     }
 
