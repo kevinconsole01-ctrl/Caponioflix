@@ -16,6 +16,14 @@
             --text-color: #ffffff;
             --text-muted: #aaaaaa;
             --border-color: #333333;
+
+            /* Sistema di animazione */
+            --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-out-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+            --dur-fast: 150ms;
+            --dur-base: 240ms;
+            --dur-slow: 380ms;
         }
 
         * {
@@ -24,14 +32,42 @@
             padding: 0;
             font-family: 'Helvetica Neue', Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+        }
+
+        *::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            transition: background-color var(--dur-base) var(--ease-standard);
+        }
+
+        *::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(229, 9, 20, 0.55);
+        }
+
+        *::-webkit-scrollbar-corner {
+            background: transparent;
         }
 
         html, body {
             width: 100%;
             max-width: 100%;
-            overflow-x: hidden;
+            overflow: hidden;
             color: var(--text-color);
             min-height: 100vh;
+            height: 100vh;
             position: relative;
         }
 
@@ -91,13 +127,18 @@
             gap: 20px;
             position: relative;
             z-index: 1;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .page-shell {
             display: grid;
             grid-template-columns: 280px minmax(0, 1fr);
             gap: 20px;
-            align-items: start;
+            align-items: stretch;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .content-stack {
@@ -105,6 +146,11 @@
             flex-direction: column;
             gap: 20px;
             min-width: 0;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 4px;
+            scrollbar-gutter: stable;
         }
 
         .sidebar {
@@ -112,8 +158,9 @@
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 16px;
             padding: 16px;
-            position: sticky;
-            top: 20px;
+            position: static;
+            height: 100%;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -178,6 +225,7 @@
             padding-bottom: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
             width: 100%;
+            flex-shrink: 0;
         }
 
         .logo-wrapper {
@@ -253,6 +301,45 @@
 
         .search-box input[type="text"] {
             border-radius: 999px;
+        }
+
+        .btn-random {
+            background: rgba(229, 9, 20, 0.14);
+            color: #fff;
+            border: 1px solid rgba(229, 9, 20, 0.55);
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .btn-random:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .btn-random:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .btn-random .dice-icon {
+            display: inline-block;
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .btn-random.is-loading .dice-icon {
+            animation: diceSpin 0.6s linear infinite;
+        }
+
+        @keyframes diceSpin {
+            to { transform: rotate(360deg); }
         }
 
         input[type="text"], input[type="number"] {
@@ -512,12 +599,20 @@
             /* transform inherited from .card-item */
         }
 
+        #recsGrid {
+            max-height: 2000px;
+            transition: max-height var(--dur-slow) var(--ease-out-smooth),
+                        opacity var(--dur-base) var(--ease-standard),
+                        margin-top var(--dur-base) var(--ease-standard);
+        }
+
         .card-item {
             background: var(--card-bg);
             border-radius: 8px;
             cursor: pointer;
             border: 2px solid transparent;
             position: relative;
+            overflow: hidden;
             will-change: transform;
             transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
                         border-color 0.25s ease,
@@ -664,19 +759,148 @@
             box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.45);
         }
 
+        .provider-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .provider-tag .provider-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .filter-reset-btn {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            width: 100%;
+        }
+
+        .filter-reset-btn:hover {
+            color: var(--text-color);
+            border-color: rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .year-range-values {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-top: 8px;
+            margin-bottom: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .year-range-values span:nth-child(2) {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .year-slider {
+            position: relative;
+            height: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .year-slider-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .year-slider-range {
+            position: absolute;
+            height: 4px;
+            border-radius: 999px;
+            background: var(--accent);
+        }
+
+        .year-slider input[type="range"] {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            margin: 0;
+            background: transparent;
+            -webkit-appearance: none;
+            appearance: none;
+            pointer-events: none;
+        }
+
+        .year-slider input[type="range"]::-webkit-slider-runnable-track {
+            background: transparent;
+            height: 30px;
+        }
+
+        .year-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            pointer-events: auto;
+            width: 16px;
+            height: 16px;
+            margin-top: 0;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid var(--accent);
+            cursor: pointer;
+            transform: translateY(7px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .year-slider input[type="range"]::-moz-range-track {
+            background: transparent;
+            height: 4px;
+        }
+
+        .year-slider input[type="range"]::-moz-range-thumb {
+            pointer-events: auto;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid var(--accent);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .year-slider input[type="range"]:focus {
+            outline: none;
+        }
+
+        .year-slider input[type="range"]:focus::-webkit-slider-thumb {
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.45);
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
 
         @keyframes heroFade {
-            from { opacity: 0.55; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes layoutFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes modalBackdropIn {
@@ -687,42 +911,81 @@
         @keyframes modalContentIn {
             from {
                 opacity: 0;
-                transform: scale(0.96);
+                transform: translateY(14px) scale(0.97);
             }
             to {
                 opacity: 1;
-                transform: scale(1);
+                transform: translateY(0) scale(1);
             }
         }
 
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes recModalCardSwap {
+            0% { opacity: 0.4; transform: scale(0.985); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .rec-modal-card-swap {
+            animation: recModalCardSwap var(--dur-base) var(--ease-out-smooth);
+        }
+
         .main-layout {
-            animation: layoutFadeIn 0.45s ease-out;
+            animation: layoutFadeIn var(--dur-slow) var(--ease-out-smooth) both;
         }
 
         .hero-section.hero-animate .hero-poster,
         .hero-section.hero-animate .hero-details {
-            animation: heroFade 0.35s ease-out;
+            animation: heroFade var(--dur-slow) var(--ease-out-smooth) both;
         }
 
         .hero-poster {
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            transition: transform var(--dur-base) var(--ease-out-smooth), box-shadow var(--dur-base) var(--ease-out-smooth);
         }
 
         .card-item {
-            transform: translateY(10px);
-            animation: fadeIn 0.4s ease-out both;
+            animation: cardEnter var(--dur-slow) var(--ease-out-smooth) both;
+            transition: transform var(--dur-base) var(--ease-out-smooth), box-shadow var(--dur-base) var(--ease-out-smooth), border-color var(--dur-base) var(--ease-standard);
+            will-change: transform;
+        }
+
+        .card-item:nth-child(1) { animation-delay: 0ms; }
+        .card-item:nth-child(2) { animation-delay: 25ms; }
+        .card-item:nth-child(3) { animation-delay: 50ms; }
+        .card-item:nth-child(4) { animation-delay: 75ms; }
+        .card-item:nth-child(5) { animation-delay: 100ms; }
+        .card-item:nth-child(6) { animation-delay: 125ms; }
+        .card-item:nth-child(7) { animation-delay: 150ms; }
+        .card-item:nth-child(8) { animation-delay: 175ms; }
+        .card-item:nth-child(n+9) { animation-delay: 195ms; }
+
+        .card-item img {
+            transition: transform var(--dur-slow) var(--ease-out-smooth);
         }
 
         .card-item:hover:not(:focus) {
-            transform: scale(1.08);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            transform: translateY(-6px) scale(1.06);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55);
             z-index: 5;
-            border-color: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+
+        .card-item:hover:not(:focus) img {
+            transform: scale(1.04);
         }
 
         .btn-action,
         .btn-play-large {
-            transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+            transition: transform var(--dur-fast) var(--ease-standard), background var(--dur-base) var(--ease-standard), box-shadow var(--dur-base) var(--ease-standard);
         }
 
         .btn-action:active,
@@ -730,7 +993,13 @@
             transform: scale(0.97);
         }
 
+        .btn-action:hover,
+        .btn-favorite:hover {
+            transform: translateY(-1px);
+        }
+
         .btn-play-large:hover {
+            transform: translateY(-1px) scale(1.03);
             box-shadow: 0 4px 18px rgba(229, 9, 20, 0.45);
         }
 
@@ -746,11 +1015,11 @@
 
         .trailer-modal.is-open {
             display: flex;
-            animation: modalBackdropIn 0.25s ease-out;
+            animation: modalBackdropIn var(--dur-base) var(--ease-out-smooth);
         }
 
         .trailer-modal.is-open .trailer-modal-frame {
-            animation: modalContentIn 0.3s ease-out;
+            animation: modalContentIn var(--dur-slow) var(--ease-out-smooth);
         }
 
         .trailer-modal-close {
@@ -761,9 +1030,39 @@
             background: rgba(255, 255, 255, 0.12);
             border: 1px solid rgba(255, 255, 255, 0.25);
             color: #fff;
-            padding: 8px 14px;
-            border-radius: 999px;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
             font-weight: bold;
+            font-size: 1.2rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color var(--dur-base) var(--ease-standard),
+                        transform var(--dur-base) var(--ease-out-smooth),
+                        border-color var(--dur-base) var(--ease-standard);
+        }
+
+        .trailer-modal-close:hover {
+            background: rgba(255, 255, 255, 0.22);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: rotate(90deg);
+        }
+
+        .trailer-modal-close:active {
+            transform: rotate(90deg) scale(0.92);
+        }
+
+        .trailer-modal-close.is-back:hover {
+            background: rgba(255, 255, 255, 0.22);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateX(-3px);
+        }
+
+        .trailer-modal-close.is-back:active {
+            transform: translateX(-3px) scale(0.92);
         }
 
         .overview-modal {
@@ -781,7 +1080,7 @@
 
         .overview-modal.is-open {
             display: flex;
-            animation: modalBackdropIn 0.25s ease-out;
+            animation: modalBackdropIn var(--dur-base) var(--ease-out-smooth);
         }
 
         .overview-modal-card {
@@ -793,7 +1092,7 @@
             padding: 24px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
             position: relative;
-            animation: modalContentIn 0.3s ease-out;
+            animation: modalContentIn var(--dur-slow) var(--ease-out-smooth);
             cursor: default;
             max-height: 90vh;
             overflow-y: auto;
@@ -880,7 +1179,7 @@
 
         .rec-modal.is-open {
             display: flex;
-            animation: modalBackdropIn 0.25s ease-out;
+            animation: modalBackdropIn var(--dur-base) var(--ease-out-smooth);
         }
 
         .rec-modal-card {
@@ -892,7 +1191,7 @@
             padding: 24px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
             position: relative;
-            animation: modalContentIn 0.3s ease-out;
+            animation: modalContentIn var(--dur-slow) var(--ease-out-smooth);
             cursor: default;
             max-height: 90vh;
             overflow-y: auto;
@@ -1077,8 +1376,24 @@
             .hero-section.hero-animate .hero-poster,
             .hero-section.hero-animate .hero-details,
             .trailer-modal.is-open,
-            .trailer-modal.is-open .trailer-modal-frame {
-                animation: none;
+            .trailer-modal.is-open .trailer-modal-frame,
+            .overview-modal.is-open,
+            .overview-modal-card,
+            .rec-modal.is-open,
+            .rec-modal-card,
+            .rec-modal-card-swap {
+                animation: none !important;
+            }
+
+            .card-item,
+            .card-item img,
+            .card-item:hover:not(:focus),
+            .trailer-modal-close,
+            .btn-action,
+            .btn-play-large,
+            .sidebar,
+            .sidebar-overlay {
+                transition: none !important;
             }
 
             .card-item:hover:not(:focus) {
@@ -1099,7 +1414,7 @@
                 border-radius: 0 16px 16px 0;
                 z-index: 1002;
                 transform: translateX(-102%);
-                transition: transform 0.25s ease;
+                transition: transform var(--dur-slow) var(--ease-out-smooth);
             }
 
             .sidebar.is-open {
@@ -1114,7 +1429,7 @@
                 z-index: 1001;
                 opacity: 0;
                 pointer-events: none;
-                transition: opacity 0.25s ease;
+                transition: opacity var(--dur-base) var(--ease-standard);
             }
 
             .sidebar-overlay.is-open {
@@ -1158,7 +1473,11 @@
             }
 
             #recsGrid.is-collapsed {
-                display: none;
+                max-height: 0;
+                opacity: 0;
+                overflow: hidden;
+                pointer-events: none;
+                margin-top: -8px;
             }
 
             header {
@@ -1185,7 +1504,8 @@
                 flex-shrink: 0;
             }
 
-            .controls-bar .view-btn {
+            .controls-bar .view-btn,
+            .controls-bar .btn-random {
                 padding: 8px 12px;
                 font-size: 0.85rem;
                 flex: 1 1 auto;
@@ -1307,6 +1627,9 @@
             <button class="view-btn active" id="homeViewBtn" type="button" onclick="setView('home')" tabindex="0">Home</button>
             <button class="view-btn" id="favoritesViewBtn" type="button" onclick="setView('favorites')" tabindex="0">Preferiti</button>
             <button class="view-btn" id="platformsViewBtn" type="button" onclick="setView('platforms')" tabindex="0">Top 10</button>
+            <button class="btn-random" id="randomBtn" type="button" onclick="apriTitoloRandom()" tabindex="0" aria-label="Scopri un titolo a caso">
+                <span class="dice-icon">🎲</span><span class="random-label">Random</span>
+            </button>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Digita per cercare..." oninput="onInputSearch()" onkeydown="if(event.key === 'Enter') cercaImmediata()" tabindex="0" autocomplete="off">
             </div>
@@ -1329,6 +1652,27 @@
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Generi</div>
                 <div class="genre-bar" id="genreBar" role="group" aria-label="Filtra per genere"></div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Servizio streaming</div>
+                <div class="genre-bar" id="providerBar" role="group" aria-label="Filtra per servizio di streaming"></div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Anno di uscita</div>
+                <div class="year-range-values">
+                    <span id="yearMinLabel">1950</span>
+                    <span>–</span>
+                    <span id="yearMaxLabel">2026</span>
+                </div>
+                <div class="year-slider" id="yearSlider">
+                    <div class="year-slider-track"></div>
+                    <div class="year-slider-range" id="yearSliderRange"></div>
+                    <input type="range" id="yearMinInput" min="1950" max="2026" value="1950" step="1" aria-label="Anno minimo" tabindex="0">
+                    <input type="range" id="yearMaxInput" min="1950" max="2026" value="2026" step="1" aria-label="Anno massimo" tabindex="0">
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <button type="button" class="filter-reset-btn" onclick="resetFiltri()" tabindex="0">Reimposta filtri</button>
             </div>
         </aside>
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -1368,9 +1712,15 @@
     let currentType = 'movie';
     let risultatiRicerca = [];
     let elementoSelezionato = null;
+    let popupStack = [];
     let currentPage = 1;
     let isSearchMode = false;
     let selectedGenreId = null;
+    let selectedProviderId = null;
+    const YEAR_MIN = 1950;
+    const YEAR_MAX = new Date().getFullYear();
+    let selectedYearMin = YEAR_MIN;
+    let selectedYearMax = YEAR_MAX;
     const SEARCH_DEBOUNCE_MS = 500;
     const FAVORITES_STORAGE_KEY = 'caponioflix_favorites';
     let debounceTimer;
@@ -1388,6 +1738,17 @@
 
     let currentPlatformId = PLATFORMS[0].id;
     let platformDataCache = {};
+
+    // Filtro "Servizio streaming": ID provider TMDB (dati sourced da JustWatch), catalogo regione IT
+    const STREAMING_PROVIDERS = [
+        { id: null, label: 'Tutti', color: 'transparent' },
+        { id: 8, label: 'Netflix', color: '#E50914' },
+        { id: 337, label: 'Disney+', color: '#113CCF' },
+        { id: 531, label: 'Paramount+', color: '#0064FF' },
+        { id: 1899, label: 'HBO Max', color: '#5822b4' },
+        { id: 119, label: 'Prime Video', color: '#00A8E1' },
+        { id: 2, label: 'Apple TV+', color: '#555555' }
+    ];
 
     const GENRES_BY_TYPE = {
         movie: [
@@ -1557,6 +1918,8 @@
                     frame.classList.toggle('active', currentType === 'tv');
                     renderGenreTags();
                 }
+                popupStack = [];
+                aggiornaStatoChiusuraRecModal();
                 aggiornaHeroDaItem(item);
             };
             container.appendChild(card);
@@ -1565,7 +1928,7 @@
 
     function setView(view) {
         currentView = view;
-        
+
         const homeBtn = document.getElementById('homeViewBtn');
         const favoritesBtn = document.getElementById('favoritesViewBtn');
         const platformsBtn = document.getElementById('platformsViewBtn');
@@ -1578,6 +1941,12 @@
         
         if (view === 'home') {
             homeBtn.classList.add('active');
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput && searchInput.value.trim()) {
+                searchInput.value = '';
+                isSearchMode = false;
+                caricaPopolari(true);
+            }
         } else if (view === 'favorites') {
             favoritesBtn.classList.add('active');
         } else if (view === 'platforms') {
@@ -1720,16 +2089,125 @@
         ricaricaLista(true);
     }
 
+    function renderProviderTags() {
+        const bar = document.getElementById('providerBar');
+        if (!bar) return;
+        bar.innerHTML = '';
+        STREAMING_PROVIDERS.forEach(provider => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'genre-tag provider-tag' + (selectedProviderId === provider.id ? ' active' : '');
+            if (provider.id !== null) {
+                const dot = document.createElement('span');
+                dot.className = 'provider-dot';
+                dot.style.background = provider.color;
+                btn.appendChild(dot);
+            }
+            const label = document.createElement('span');
+            label.textContent = provider.label;
+            btn.appendChild(label);
+            btn.tabIndex = 0;
+            btn.onclick = () => setProviderFilter(provider.id);
+            bar.appendChild(btn);
+        });
+    }
+
+    function setProviderFilter(providerId) {
+        selectedProviderId = providerId;
+        renderProviderTags();
+        if (window.innerWidth <= 900) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar?.classList.remove('is-open');
+            overlay?.classList.remove('is-open');
+        }
+        ricaricaLista(true);
+    }
+
+    function getProviderLabel(id) {
+        const provider = STREAMING_PROVIDERS.find(p => p.id === id);
+        return provider ? provider.label : '';
+    }
+
+    function updateYearSliderUI() {
+        const minInput = document.getElementById('yearMinInput');
+        const maxInput = document.getElementById('yearMaxInput');
+        const rangeEl = document.getElementById('yearSliderRange');
+        if (!minInput || !maxInput || !rangeEl) return;
+        document.getElementById('yearMinLabel').textContent = minInput.value;
+        document.getElementById('yearMaxLabel').textContent = maxInput.value;
+        const span = YEAR_MAX - YEAR_MIN;
+        const minPct = ((minInput.value - YEAR_MIN) / span) * 100;
+        const maxPct = ((maxInput.value - YEAR_MIN) / span) * 100;
+        rangeEl.style.left = minPct + '%';
+        rangeEl.style.width = Math.max(0, maxPct - minPct) + '%';
+    }
+
+    function initYearSlider() {
+        const minInput = document.getElementById('yearMinInput');
+        const maxInput = document.getElementById('yearMaxInput');
+        if (!minInput || !maxInput) return;
+        minInput.min = YEAR_MIN; minInput.max = YEAR_MAX; minInput.value = YEAR_MIN;
+        maxInput.min = YEAR_MIN; maxInput.max = YEAR_MAX; maxInput.value = YEAR_MAX;
+        updateYearSliderUI();
+
+        minInput.addEventListener('input', () => {
+            if (parseInt(minInput.value, 10) > parseInt(maxInput.value, 10) - 1) {
+                minInput.value = parseInt(maxInput.value, 10) - 1;
+            }
+            selectedYearMin = parseInt(minInput.value, 10);
+            updateYearSliderUI();
+        });
+        maxInput.addEventListener('input', () => {
+            if (parseInt(maxInput.value, 10) < parseInt(minInput.value, 10) + 1) {
+                maxInput.value = parseInt(minInput.value, 10) + 1;
+            }
+            selectedYearMax = parseInt(maxInput.value, 10);
+            updateYearSliderUI();
+        });
+        minInput.addEventListener('change', () => ricaricaLista(true));
+        maxInput.addEventListener('change', () => ricaricaLista(true));
+    }
+
+    function resetFiltri() {
+        selectedGenreId = null;
+        selectedProviderId = null;
+        selectedYearMin = YEAR_MIN;
+        selectedYearMax = YEAR_MAX;
+        const minInput = document.getElementById('yearMinInput');
+        const maxInput = document.getElementById('yearMaxInput');
+        if (minInput) minInput.value = YEAR_MIN;
+        if (maxInput) maxInput.value = YEAR_MAX;
+        updateYearSliderUI();
+        renderGenreTags();
+        renderProviderTags();
+        ricaricaLista(true);
+    }
+
+    function hasActiveDiscoverFilters() {
+        return !!selectedGenreId || !!selectedProviderId || selectedYearMin !== YEAR_MIN || selectedYearMax !== YEAR_MAX;
+    }
+
+    function buildFilterBadge() {
+        const parts = [];
+        if (selectedGenreId) parts.push(getGenreLabel(selectedGenreId));
+        if (selectedProviderId) parts.push(getProviderLabel(selectedProviderId));
+        if (selectedYearMin !== YEAR_MIN || selectedYearMax !== YEAR_MAX) {
+            parts.push(`${selectedYearMin}-${selectedYearMax}`);
+        }
+        return parts.length ? ` · ${parts.join(' · ')}` : '';
+    }
+
     function aggiornaTitoloGriglia() {
         const query = document.getElementById('searchInput').value.trim();
         const tipo = currentType === 'movie' ? 'Film' : 'Serie TV';
         if (query) {
-            const genere = selectedGenreId ? ` · ${getGenreLabel(selectedGenreId)}` : '';
-            document.getElementById('gridTitle').innerText = `Risultati per "${query}"${genere}`;
+            const badge = selectedGenreId ? ` · ${getGenreLabel(selectedGenreId)}` : '';
+            document.getElementById('gridTitle').innerText = `Risultati per "${query}"${badge}`;
             return;
         }
-        if (selectedGenreId) {
-            document.getElementById('gridTitle').innerText = `${getGenreLabel(selectedGenreId)} · ${tipo}`;
+        if (hasActiveDiscoverFilters()) {
+            document.getElementById('gridTitle').innerText = `${tipo}${buildFilterBadge()}`;
             return;
         }
         document.getElementById('gridTitle').innerText = `Popolari del momento (${tipo})`;
@@ -1739,14 +2217,36 @@
         const query = document.getElementById('searchInput').value.trim();
         if (query) {
             cerca(reset);
-        } else if (selectedGenreId) {
-            caricaPerGenere(reset);
+        } else if (hasActiveDiscoverFilters()) {
+            caricaConFiltri(reset);
         } else {
             caricaPopolari(reset);
         }
     }
 
+    function assicuraVistaHomePerRicerca() {
+        if (currentView === 'home') return;
+        currentView = 'home';
+
+        document.getElementById('homeViewBtn')?.classList.add('active');
+        document.getElementById('favoritesViewBtn')?.classList.remove('active');
+        document.getElementById('platformsViewBtn')?.classList.remove('active');
+
+        const favoritesSection = document.getElementById('favoritesSection');
+        const popularSection = document.getElementById('popularSection');
+        const platformsSection = document.getElementById('platformsSection');
+        if (favoritesSection) favoritesSection.style.display = 'none';
+        if (popularSection) popularSection.style.display = 'flex';
+        if (platformsSection) platformsSection.classList.remove('is-open');
+    }
+
     function onInputSearch() {
+        const query = document.getElementById('searchInput').value.trim();
+
+        if (query) {
+            assicuraVistaHomePerRicerca();
+        }
+
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             cerca(true);
@@ -1754,15 +2254,98 @@
     }
 
     function cercaImmediata() {
+        const query = document.getElementById('searchInput').value.trim();
+        if (query) {
+            assicuraVistaHomePerRicerca();
+        }
         clearTimeout(debounceTimer);
         cerca(true);
     }
+
+    // --- Tasto "Random": pesca un titolo casuale da tutto il catalogo TMDB ---
+    // (non solo tra quelli già caricati a schermo), adattandosi alla sezione corrente.
+
+    function setRandomButtonLoading(isLoading) {
+        const btn = document.getElementById('randomBtn');
+        if (!btn) return;
+        btn.disabled = isLoading;
+        btn.classList.toggle('is-loading', isLoading);
+    }
+
+    async function estraiTitoloCasualeDaDiscover(extraParams = '') {
+        const baseUrl = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${API_KEY}&language=it-IT&sort_by=popularity.desc&vote_count.gte=25${extraParams}`;
+
+        // Prima chiamata per scoprire quante pagine ha il catalogo con questi filtri
+        const primaRes = await fetch(`${baseUrl}&page=1`);
+        if (!primaRes.ok) throw new Error('API discover non disponibile');
+        const primaData = await primaRes.json();
+        const totalPages = Math.min(primaData.total_pages || 1, 500); // limite massimo TMDB
+
+        if (!totalPages || totalPages < 1) return null;
+
+        const paginaCasuale = Math.max(1, Math.floor(Math.random() * totalPages) + 1);
+
+        let results;
+        if (paginaCasuale === 1) {
+            results = primaData.results || [];
+        } else {
+            const res = await fetch(`${baseUrl}&page=${paginaCasuale}`);
+            if (!res.ok) throw new Error('API discover non disponibile');
+            const data = await res.json();
+            results = data.results || [];
+        }
+
+        if (!results.length) return null;
+        return results[Math.floor(Math.random() * results.length)];
+    }
+
+    async function apriTitoloRandom() {
+        setRandomButtonLoading(true);
+        try {
+            let item = null;
+
+            if (currentView === 'favorites') {
+                // Nei preferiti peschiamo dalla lista personale dell'utente
+                const candidati = favorites.filter(f => (f.type || currentType) === currentType);
+                const pool = candidati.length ? candidati : favorites;
+                if (!pool.length) {
+                    alert('Non hai ancora titoli nei preferiti per questo tipo.');
+                    return;
+                }
+                item = pool[Math.floor(Math.random() * pool.length)];
+            } else if (currentView === 'platforms') {
+                // In Top 10 restiamo sulla piattaforma selezionata, ma peschiamo da tutto il suo catalogo IT
+                item = await estraiTitoloCasualeDaDiscover(`&with_watch_providers=${currentPlatformId}&watch_region=IT&with_watch_monetization_types=flatrate`);
+            } else {
+                // Home: rispetta i filtri attivi in sidebar (genere, servizio, anno) su tutto il catalogo
+                let params = '';
+                if (selectedGenreId) params += `&with_genres=${selectedGenreId}`;
+                if (selectedProviderId) params += `&with_watch_providers=${selectedProviderId}&watch_region=IT&with_watch_monetization_types=flatrate`;
+                if (selectedYearMin !== YEAR_MIN || selectedYearMax !== YEAR_MAX) {
+                    const campo = currentType === 'movie' ? 'primary_release_date' : 'first_air_date';
+                    params += `&${campo}.gte=${selectedYearMin}-01-01&${campo}.lte=${selectedYearMax}-12-31`;
+                }
+                item = await estraiTitoloCasualeDaDiscover(params);
+            }
+
+            if (!item) {
+                alert('Nessun titolo trovato per questa combinazione di filtri.');
+                return;
+            }
+
+            apriItemFresco({ ...item, type: item.type || currentType });
+        } catch (err) {
+            alert('Impossibile trovare un titolo casuale in questo momento.');
+        } finally {
+            setRandomButtonLoading(false);
+        }
+    }
+
 function setRecsCollapsed(collapsed) {
     const grid = document.getElementById('recsGrid');
     const btn = document.getElementById('recsToggleBtn');
     if (!grid || !btn) return;
     grid.classList.toggle('is-collapsed', collapsed);
-    grid.style.display = collapsed ? 'none' : 'grid';
     btn.textContent = collapsed ? 'Mostra ▾' : 'Nascondi ▴';
     btn.setAttribute('aria-expanded', String(!collapsed));
 }
@@ -1815,11 +2398,43 @@ async function fetchRecommendations(id, mediaType = currentType) {
     }
 }
 
+    function aggiornaStatoChiusuraRecModal() {
+        const closeBtn = document.getElementById('recModalCloseBtn');
+        if (!closeBtn) return;
+        if (popupStack.length > 0) {
+            closeBtn.innerHTML = '←';
+            closeBtn.classList.add('is-back');
+            closeBtn.setAttribute('aria-label', 'Torna al titolo precedente');
+        } else {
+            closeBtn.innerHTML = '✕';
+            closeBtn.classList.remove('is-back');
+            closeBtn.setAttribute('aria-label', 'Chiudi');
+        }
+    }
+
     function chiudiPopupConsigliato() {
+        if (popupStack.length > 0) {
+            const precedente = popupStack.pop();
+            aggiornaStatoChiusuraRecModal();
+            aggiornaHeroDaItem(precedente.item);
+            return;
+        }
         document.getElementById('recModal').classList.remove('is-open');
     }
 
     function selezionaItem(item) {
+        if (elementoSelezionato) {
+            popupStack.push({ item: elementoSelezionato });
+        }
+        aggiornaStatoChiusuraRecModal();
+        aggiornaHeroDaItem(item);
+    }
+
+    // Apre un titolo "da zero", azzerando lo stack di navigazione dei popup:
+    // usata dal tasto Random per evitare che chiudere il popup torni a quello precedente.
+    function apriItemFresco(item) {
+        popupStack = [];
+        aggiornaStatoChiusuraRecModal();
         aggiornaHeroDaItem(item);
     }
 
@@ -1893,6 +2508,8 @@ async function fetchRecommendations(id, mediaType = currentType) {
         loadFavorites();
         renderFavoritesSection();
         renderGenreTags();
+        renderProviderTags();
+        initYearSlider();
 
         // Timeout di sicurezza: se il caricamento è lento, la splash sparisce comunque dopo 4s
         const splashSafetyTimeout = setTimeout(nascondiSplashScreen, 4000);
@@ -1929,17 +2546,15 @@ async function fetchRecommendations(id, mediaType = currentType) {
             overlay?.classList.remove('is-open');
         }
 
+        if (currentView !== 'home') {
+            setView('home');
+        }
+
         const query = document.getElementById('searchInput').value.trim();
         if (!query) {
             caricaPopolari(true);
         } else {
             cerca(true);
-        }
-
-        // Refresh platform data if visible
-        if (currentView === 'platforms') {
-            platformDataCache = {};
-            loadPlatformContent(currentPlatformId);
         }
     }
 
@@ -1985,7 +2600,27 @@ async function fetchRecommendations(id, mediaType = currentType) {
         document.getElementById('btnLoadMore').style.display = 'inline-flex';
     }
 
-    async function caricaPerGenere(reset = false) {
+    function costruisciDiscoverUrl(page) {
+        let url = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${API_KEY}&language=it-IT&sort_by=popularity.desc&page=${page}`;
+
+        if (selectedGenreId) {
+            url += `&with_genres=${selectedGenreId}`;
+        }
+
+        if (selectedProviderId) {
+            // Catalogo italiano: watch_region=IT, dati provider sourced da JustWatch tramite TMDB
+            url += `&with_watch_providers=${selectedProviderId}&watch_region=IT&with_watch_monetization_types=flatrate`;
+        }
+
+        if (selectedYearMin !== YEAR_MIN || selectedYearMax !== YEAR_MAX) {
+            const campo = currentType === 'movie' ? 'primary_release_date' : 'first_air_date';
+            url += `&${campo}.gte=${selectedYearMin}-01-01&${campo}.lte=${selectedYearMax}-12-31`;
+        }
+
+        return url;
+    }
+
+    async function caricaConFiltri(reset = false) {
         isSearchMode = false;
         if (reset) {
             currentPage = 1;
@@ -1994,11 +2629,9 @@ async function fetchRecommendations(id, mediaType = currentType) {
         }
         aggiornaTitoloGriglia();
 
-        const discoverBase = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${API_KEY}&language=it-IT&sort_by=popularity.desc&with_genres=${selectedGenreId}`;
-
-        await fetchEPopola(`${discoverBase}&page=${currentPage}`, reset);
+        await fetchEPopola(costruisciDiscoverUrl(currentPage), reset);
         currentPage++;
-        await fetchEPopola(`${discoverBase}&page=${currentPage}`, false);
+        await fetchEPopola(costruisciDiscoverUrl(currentPage), false);
 
         document.getElementById('btnLoadMore').style.display = 'inline-flex';
     }
@@ -2090,9 +2723,8 @@ async function fetchRecommendations(id, mediaType = currentType) {
             cercaConPersone(query, currentPage).then(results => {
                 fetchEPopola(results, false, null);
             });
-        } else if (selectedGenreId) {
-            const url = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${API_KEY}&language=it-IT&sort_by=popularity.desc&with_genres=${selectedGenreId}&page=${currentPage}`;
-            fetchEPopola(url, false);
+        } else if (hasActiveDiscoverFilters()) {
+            fetchEPopola(costruisciDiscoverUrl(currentPage), false);
         } else {
             const url = `https://api.themoviedb.org/3/trending/${currentType}/week?api_key=${API_KEY}&language=it-IT&page=${currentPage}`;
             fetchEPopola(url, false);
@@ -2207,17 +2839,34 @@ async function fetchRecommendations(id, mediaType = currentType) {
         for (let s = 1; s <= seasonCount; s++) {
             const seasonInfo = seasonsData.find(entry => entry.season_number === s);
             const epCount = seasonInfo?.episode_count || 1;
-            seasonOptions.push(`<option value="${s}">Stagione ${s}${epCount ? ` (${epCount} ep)` : ''}</option>`);
+            seasonOptions.push(`<option value="${s}">${s}${epCount ? ` (${epCount} ep)` : ''}</option>`);
         }
         seasonSelect.innerHTML = seasonOptions.join('');
         seasonSelect.value = '1';
 
-        const aggiornaEpisodi = (selectedSeason) => {
+        const aggiornaEpisodi = async (selectedSeason) => {
             const seasonInfo = seasonsData.find(entry => entry.season_number === selectedSeason);
-            const episodeCount = Math.max(1, seasonInfo?.episode_count || 1);
+            const fallbackCount = Math.max(1, seasonInfo?.episode_count || 1);
+
+            episodeSelect.innerHTML = `<option value="1">Caricamento...</option>`;
+
+            let episodesData = [];
+            try {
+                const res = await fetch(`https://api.themoviedb.org/3/tv/${tvItem.id}/season/${selectedSeason}?api_key=${API_KEY}&language=it-IT`);
+                if (res.ok) {
+                    const seasonDetail = await res.json();
+                    episodesData = Array.isArray(seasonDetail.episodes) ? seasonDetail.episodes : [];
+                }
+            } catch {
+                episodesData = [];
+            }
+
+            const episodeCount = Math.max(1, episodesData.length || fallbackCount);
             const episodeOptions = [];
             for (let e = 1; e <= episodeCount; e++) {
-                episodeOptions.push(`<option value="${e}">Episodio ${e}</option>`);
+                const episodeInfo = episodesData.find(entry => entry.episode_number === e);
+                const durata = episodeInfo?.runtime ? ` · ${formatRuntime(episodeInfo.runtime)}` : '';
+                episodeOptions.push(`<option value="${e}">${e}${durata}</option>`);
             }
             episodeSelect.innerHTML = episodeOptions.join('');
             episodeSelect.value = '1';
@@ -2227,7 +2876,7 @@ async function fetchRecommendations(id, mediaType = currentType) {
             aggiornaEpisodi(parseInt(seasonSelect.value || '1', 10));
         };
 
-        aggiornaEpisodi(1);
+        await aggiornaEpisodi(1);
     }
 
     function formatRuntime(minutes) {
@@ -2260,7 +2909,18 @@ async function fetchRecommendations(id, mediaType = currentType) {
         elementoSelezionato = item;
         if (!elementoSelezionato) return;
 
-        document.getElementById('recModal').classList.add('is-open');
+        const recModalEl = document.getElementById('recModal');
+        const eraGiaAperto = recModalEl.classList.contains('is-open');
+        recModalEl.classList.add('is-open');
+
+        if (eraGiaAperto) {
+            const recModalCardEl = document.querySelector('.rec-modal-card');
+            if (recModalCardEl) {
+                recModalCardEl.classList.remove('rec-modal-card-swap');
+                void recModalCardEl.offsetWidth;
+                recModalCardEl.classList.add('rec-modal-card-swap');
+            }
+        }
 
         const mediaType = elementoSelezionato.type || currentType;
         const nome = mediaType === 'movie' ? elementoSelezionato.title : elementoSelezionato.name;
@@ -2310,6 +2970,8 @@ async function fetchRecommendations(id, mediaType = currentType) {
         elementoSelezionato = risultatiRicerca[index];
         if (!elementoSelezionato) return;
 
+        popupStack = [];
+        aggiornaStatoChiusuraRecModal();
         document.getElementById('recModal').classList.add('is-open');
 
         const selectedId = elementoSelezionato.id;
@@ -2499,13 +3161,13 @@ async function fetchRecommendations(id, mediaType = currentType) {
     }
 </script>
 <div id="trailerModal" class="trailer-modal" role="dialog" aria-modal="true" aria-label="Anteprima trailer">
-    <button type="button" class="trailer-modal-close" onclick="chiudiTrailerModal()">CHIUDI</button>
+    <button type="button" class="trailer-modal-close" onclick="chiudiTrailerModal()" aria-label="Chiudi">✕</button>
     <iframe id="trailerFrame" class="trailer-modal-frame" width="80%" height="80%" frameborder="0" allowfullscreen></iframe>
 </div>
 
 <div id="overviewModal" class="overview-modal" role="dialog" aria-modal="true" aria-label="Trama completa">
     <div class="overview-modal-card">
-        <button type="button" class="trailer-modal-close" onclick="chiudiTramaModal()">CHIUDI</button>
+        <button type="button" class="trailer-modal-close" onclick="chiudiTramaModal()" aria-label="Chiudi">✕</button>
         <div class="overview-modal-title" id="overviewModalTitle">Trama</div>
         <div class="overview-modal-meta" id="overviewModalMeta"></div>
         <div class="overview-modal-text" id="overviewModalText"></div>
@@ -2515,7 +3177,7 @@ async function fetchRecommendations(id, mediaType = currentType) {
 
 <div id="recModal" class="rec-modal" role="dialog" aria-modal="true" aria-label="Dettaglio titolo">
     <div class="rec-modal-card">
-        <button type="button" class="trailer-modal-close" onclick="chiudiPopupConsigliato()">CHIUDI</button>
+        <button type="button" class="trailer-modal-close" id="recModalCloseBtn" onclick="chiudiPopupConsigliato()" aria-label="Chiudi">✕</button>
         <div class="rec-modal-body">
             <img class="hero-poster" id="heroPoster" src="https://via.placeholder.com/185x278?text=Caricamento..." alt="Poster">
             <div class="hero-details">
