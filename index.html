@@ -586,22 +586,38 @@
         .load-more-container {
             display: flex;
             justify-content: center;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         .btn-load-more {
-            background: #2b2b2b;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             color: #fff;
-            border: 1px solid var(--border-color);
-            padding: 10px 24px;
-            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
+            padding: 0;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-load-more svg {
+            width: 22px;
+            height: 22px;
         }
 
         .btn-load-more:hover {
-            background: #3a3a3a;
+            background: rgba(255, 255, 255, 0.16);
+            border-color: var(--accent);
+            box-shadow: 0 6px 18px rgba(229, 9, 20, 0.35);
+            transform: scale(1.08);
+        }
+
+        .btn-load-more:active {
+            transform: scale(0.94);
         }
 
         .status-msg {
@@ -1335,8 +1351,11 @@
                     <div class="status-msg">Caricamento contenuti in corso...</div>
                 </div>
                 <div class="load-more-container">
-                    <button class="btn-load-more" id="btnLoadMore" onclick="caricaAltriRisultati()" style="display: none;" tabindex="0">
-                        ➕ CARICA ALTRI TITOLI
+                    <button class="btn-load-more" id="btnLoadMore" onclick="caricaAltriRisultati()" style="display: none;" tabindex="0" aria-label="Carica altri titoli" title="Carica altri titoli">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -1963,7 +1982,7 @@ async function fetchRecommendations(id, mediaType = currentType) {
         currentPage++;
         await fetchEPopola(`https://api.themoviedb.org/3/trending/${currentType}/week?api_key=${API_KEY}&language=it-IT&page=${currentPage}`, false);
 
-        document.getElementById('btnLoadMore').style.display = 'block';
+        document.getElementById('btnLoadMore').style.display = 'inline-flex';
     }
 
     async function caricaPerGenere(reset = false) {
@@ -1981,7 +2000,7 @@ async function fetchRecommendations(id, mediaType = currentType) {
         currentPage++;
         await fetchEPopola(`${discoverBase}&page=${currentPage}`, false);
 
-        document.getElementById('btnLoadMore').style.display = 'block';
+        document.getElementById('btnLoadMore').style.display = 'inline-flex';
     }
 
     async function cercaConPersone(query, page = 1) {
@@ -2061,7 +2080,7 @@ async function fetchRecommendations(id, mediaType = currentType) {
         const secondResults = await cercaConPersone(query, currentPage);
         await fetchEPopola(secondResults, false, null);
 
-        document.getElementById('btnLoadMore').style.display = 'block';
+        document.getElementById('btnLoadMore').style.display = 'inline-flex';
     }
 
     function caricaAltriRisultati() {
