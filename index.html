@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #141414;
+            --bg-color: #181818;
             --card-bg: #1f1f1f;
             --accent: #e50914; /* Rosso stile Netflix */
             --text-color: #ffffff;
@@ -36,7 +36,7 @@
         }
 
         html, body {
-            background-color: transparent;
+            background-color: var(--bg-color);
         }
 
         .main-layout {
@@ -79,33 +79,6 @@
         @keyframes splashPulse {
             0%, 100% { opacity: 0.55; transform: scale(0.96); }
             50% { opacity: 1; transform: scale(1.04); }
-        }
-
-        #backdropContainer {
-            position: fixed;
-            inset: 0;
-            z-index: -3;
-            overflow: hidden;
-            pointer-events: none;
-            background: transparent;
-        }
-
-        #backdropImg {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: blur(16px) brightness(0.45) saturate(0.9);
-            transform: scale(1.12);
-            transition: opacity 0.45s ease-in-out;
-            opacity: 0;
-        }
-
-        .backdrop-overlay {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.14) 100%);
-            z-index: -2;
-            pointer-events: none;
         }
 
         .main-layout {
@@ -782,7 +755,7 @@
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.84);
-            z-index: 10000;
+            z-index: 10002;
             justify-content: center;
             align-items: center;
             padding: 20px;
@@ -905,6 +878,45 @@
             position: relative;
             animation: modalContentIn 0.3s ease-out;
             cursor: default;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 600px) {
+            .rec-modal {
+                padding: 10px;
+                align-items: flex-end;
+            }
+
+            .rec-modal-card {
+                padding: 16px;
+                max-height: 88vh;
+            }
+
+            .rec-modal-body {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .rec-modal-body .hero-poster {
+                width: 130px;
+                height: 195px;
+            }
+
+            .rec-modal-body .hero-details {
+                align-items: center;
+                width: 100%;
+            }
+
+            .rec-modal-body .hero-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .rec-modal-body .episodes-selector {
+                justify-content: center;
+            }
         }
 
         .rec-modal-body {
@@ -1265,11 +1277,6 @@
     <span class="splash-logo-fallback" id="splashLogoFallback" style="display:none;">CAPONIOFLIX</span>
 </div>
 
-<div id="backdropContainer">
-    <img id="backdropImg" src="" alt="Backdrop">
-</div>
-<div class="backdrop-overlay"></div>
-
 <div class="main-layout">
     <header>
         <div class="logo-wrapper">
@@ -1311,42 +1318,6 @@
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <div class="content-stack">
-            <div class="hero-section" id="heroSection">
-                <div style="display:flex; gap:20px; align-items:flex-start; min-width:0;">
-                    <img class="hero-poster" id="heroPoster" src="https://via.placeholder.com/185x278?text=Caricamento..." alt="Poster">
-                    <div class="hero-details">
-                        <div class="hero-title" id="heroTitle">Caricamento...</div>
-                        <div class="hero-meta" id="heroMeta">---</div>
-                        <div class="hero-overview" id="heroOverview">...</div>
-                        <button class="btn-action" type="button" onclick="apriTramaCompleta()" style="width: fit-content; margin-top: 4px;">Mostra altro</button>
-                        
-                        <div class="episodes-selector" id="episodesFrame">
-                            <label>Stagione:
-                                <select id="seasonInput" tabindex="0"></select>
-                            </label>
-                            <label>Episodio:
-                                <select id="episodeInput" tabindex="0"></select>
-                            </label>
-                        </div>
-
-                        <div class="hero-actions">
-                            <button class="btn-play-large" id="btnPlay" onclick="riproduciInPagina()" tabindex="0" aria-label="Guarda ora">
-                                ▶
-                            </button>
-                            <button class="btn-favorite" id="btnFavorite" type="button" onclick="toggleFavorite(elementoSelezionato)" tabindex="0" aria-label="Aggiungi ai preferiti" aria-pressed="false">♡</button>
-                            <button class="btn-action btn-trailer" type="button" onclick="showTrailer()" tabindex="0">Trailer</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="min-width:0;">
-                    <div class="recs-header" id="recsHeader" style="display:none; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
-                        <div class="section-title" id="recsTitle" style="margin:0;">Potrebbe piacerti anche</div>
-                        <button class="recs-toggle" id="recsToggleBtn" type="button" onclick="toggleRecs()" aria-expanded="true">Nascondi ▴</button>
-                    </div>
-                    <div id="recsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(90px, 1fr)); gap:8px; width:100%;"></div>
-                </div>
-            </div>
             <div class="favorites-section" id="favoritesSection">
                 <div class="section-title">Preferiti</div>
                 <div class="favorites-grid" id="favoritesGrid"></div>
@@ -1825,78 +1796,12 @@ async function fetchRecommendations(id, mediaType = currentType) {
     }
 }
 
-    let popupItem = null;
-
-    function aggiornaStatoPreferitoPopup(item) {
-        const btn = document.getElementById('recModalFavorite');
-        if (!btn) return;
-        const active = isFavorite(item);
-        btn.classList.toggle('active', active);
-        btn.textContent = active ? '♥' : '♡';
-        btn.setAttribute('aria-pressed', String(active));
-        btn.setAttribute('aria-label', active ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti');
-    }
-
-    async function mostraPopupConsigliato(item) {
-        const modal = document.getElementById('recModal');
-        const titleEl = document.getElementById('recModalTitle');
-        const metaEl = document.getElementById('recModalMeta');
-        const overviewEl = document.getElementById('recModalOverview');
-        const posterEl = document.getElementById('recModalPoster');
-
-        popupItem = item;
-
-        const nome = currentType === 'movie' ? item.title : item.name;
-        const dataUscita = currentType === 'movie' ? item.release_date : item.first_air_date;
-        const anno = dataUscita ? dataUscita.substring(0, 4) : 'N/D';
-        const voto = item.vote_average ? `★ ${item.vote_average.toFixed(1)}/10` : '';
-        const posterPath = item.poster_path
-            ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
-            : 'https://via.placeholder.com/185x278?text=No+Cover';
-
-        titleEl.textContent = nome || 'Titolo';
-        overviewEl.textContent = item.overview || 'Nessuna descrizione disponibile.';
-        posterEl.src = posterPath;
-        metaEl.innerHTML = '<span>Caricamento dettagli...</span>';
-        aggiornaStatoPreferitoPopup(item);
-        modal.classList.add('is-open');
-
-        try {
-            const [detailsRes, creditsRes] = await Promise.all([
-                fetch(`https://api.themoviedb.org/3/${currentType}/${item.id}?api_key=${API_KEY}&language=it-IT`),
-                fetch(`https://api.themoviedb.org/3/${currentType}/${item.id}/credits?api_key=${API_KEY}&language=it-IT`)
-            ]);
-
-            let runtime = '';
-            let countries = '';
-            let director = '';
-
-            if (detailsRes.ok) {
-                const details = await detailsRes.json();
-                runtime = currentType === 'movie' ? formatRuntime(details.runtime) : '';
-                countries = formatCountries(details.production_countries || []);
-            }
-
-            if (creditsRes.ok) {
-                const credits = await creditsRes.json();
-                const directorPerson = (credits.crew || []).find(person => person.job === 'Director' || person.department === 'Directing');
-                director = directorPerson?.name || '';
-            }
-
-            const metaItems = [anno, voto, runtime, countries, director].filter(Boolean);
-            metaEl.innerHTML = metaItems.length ? metaItems.map(item => `<span>${item}</span>`).join(' • ') : '<span>Dettagli non disponibili</span>';
-        } catch {
-            metaEl.innerHTML = '<span>Dettagli non disponibili</span>';
-        }
-    }
-
     function chiudiPopupConsigliato() {
-        popupItem = null;
         document.getElementById('recModal').classList.remove('is-open');
     }
 
     function selezionaItem(item) {
-        mostraPopupConsigliato(item);
+        aggiornaHeroDaItem(item);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -2227,7 +2132,6 @@ async function fetchRecommendations(id, mediaType = currentType) {
                 const titleEl = card.querySelector('.card-title');
                 titleEl.textContent = nome || '';
 
-                card.onfocus = () => aggiornaHero(currentIndex);
                 card.onclick = () => {
                     aggiornaHero(currentIndex);
                     document.getElementById('btnPlay').focus();
@@ -2248,67 +2152,11 @@ async function fetchRecommendations(id, mediaType = currentType) {
                 listContainer.appendChild(card);
             });
 
-            if (startIndex === 0 && risultatiRicerca.length > 0) {
-                aggiornaHero(0);
-            }
-
         } catch (err) {
             if (risultatiRicerca.length === 0) {
                 listContainer.innerHTML = `<div class="status-msg">Errore di connessione: ${err.message}</div>`;
             }
         }
-    }
-
-    function estraiColoreDominante(src) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            const proxyUrl = `https://images.weserv.nl/?w=64&h=64&output=jpg&url=${encodeURIComponent(src)}`;
-
-            img.onload = () => {
-                try {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const size = 64;
-                    canvas.width = size;
-                    canvas.height = size;
-                    ctx.drawImage(img, 0, 0, size, size);
-
-                    const data = ctx.getImageData(0, 0, size, size).data;
-                    const buckets = new Map();
-
-                    for (let i = 0; i < data.length; i += 4) {
-                        const alpha = data[i + 3];
-                        if (alpha < 128) continue;
-
-                        const r = Math.round(data[i] / 32) * 32;
-                        const g = Math.round(data[i + 1] / 32) * 32;
-                        const b = Math.round(data[i + 2] / 32) * 32;
-                        const key = `${r},${g},${b}`;
-                        buckets.set(key, (buckets.get(key) || 0) + 1);
-                    }
-
-                    let bestKey = null;
-                    let bestCount = 0;
-                    buckets.forEach((count, key) => {
-                        if (count > bestCount) {
-                            bestCount = count;
-                            bestKey = key;
-                        }
-                    });
-
-                    if (bestKey) {
-                        const [r, g, b] = bestKey.split(',').map(Number);
-                        resolve(`rgb(${r}, ${g}, ${b})`);
-                    } else {
-                        resolve('#141414');
-                    }
-                } catch {
-                    resolve('#141414');
-                }
-            };
-            img.onerror = () => resolve('#141414');
-            img.src = proxyUrl;
-        });
     }
 
     async function aggiornaSelectSerie(tvItem) {
@@ -2372,17 +2220,28 @@ async function fetchRecommendations(id, mediaType = currentType) {
 
     function formatCountries(countries) {
         if (!Array.isArray(countries) || !countries.length) return '';
-        return countries.map(country => country.name || country.iso_3166_1).filter(Boolean).join(', ');
+        let regionNames = null;
+        try {
+            regionNames = new Intl.DisplayNames(['it'], { type: 'region' });
+        } catch {
+            regionNames = null;
+        }
+        return countries.map(country => {
+            if (regionNames && country.iso_3166_1) {
+                try {
+                    const localized = regionNames.of(country.iso_3166_1);
+                    if (localized) return localized;
+                } catch {}
+            }
+            return country.name || country.iso_3166_1;
+        }).filter(Boolean).join(', ');
     }
 
     async function aggiornaHeroDaItem(item) {
         elementoSelezionato = item;
         if (!elementoSelezionato) return;
 
-        const heroSection = document.getElementById('heroSection');
-        heroSection.classList.remove('hero-animate');
-        void heroSection.offsetWidth;
-        heroSection.classList.add('hero-animate');
+        document.getElementById('recModal').classList.add('is-open');
 
         const mediaType = elementoSelezionato.type || currentType;
         const nome = mediaType === 'movie' ? elementoSelezionato.title : elementoSelezionato.name;
@@ -2422,22 +2281,6 @@ async function fetchRecommendations(id, mediaType = currentType) {
 
         updateFavoriteButton(elementoSelezionato);
 
-        const dominantColor = await estraiColoreDominante(posterPath);
-        document.documentElement.style.setProperty('--bg-color', dominantColor);
-
-        const backdropImg = document.getElementById('backdropImg');
-        const bgPath = elementoSelezionato.backdrop_path || elementoSelezionato.poster_path;
-
-        if (bgPath) {
-            const imgUrl = `https://image.tmdb.org/t/p/w1280${bgPath}`;
-            backdropImg.onload = () => {
-                backdropImg.style.opacity = '1';
-            };
-            backdropImg.src = imgUrl;
-        } else {
-            backdropImg.style.opacity = '0';
-        }
-
         fetchRecommendations(elementoSelezionato.id, mediaType);
         if (currentView === 'favorites') {
             renderFavoritesSection();
@@ -2448,10 +2291,7 @@ async function fetchRecommendations(id, mediaType = currentType) {
         elementoSelezionato = risultatiRicerca[index];
         if (!elementoSelezionato) return;
 
-        const heroSection = document.getElementById('heroSection');
-        heroSection.classList.remove('hero-animate');
-        void heroSection.offsetWidth;
-        heroSection.classList.add('hero-animate');
+        document.getElementById('recModal').classList.add('is-open');
 
         const selectedId = elementoSelezionato.id;
         document.querySelectorAll('#resultsList .card-item').forEach((el, i) => {
@@ -2496,22 +2336,6 @@ async function fetchRecommendations(id, mediaType = currentType) {
         }
 
         updateFavoriteButton(item);
-
-        const dominantColor = await estraiColoreDominante(posterPath);
-        document.documentElement.style.setProperty('--bg-color', dominantColor);
-
-        const backdropImg = document.getElementById('backdropImg');
-        const bgPath = item.backdrop_path || item.poster_path;
-
-        if (bgPath) {
-            const imgUrl = `https://image.tmdb.org/t/p/w1280${bgPath}`;
-            backdropImg.onload = () => {
-                backdropImg.style.opacity = '1';
-            };
-            backdropImg.src = imgUrl;
-        } else {
-            backdropImg.style.opacity = '0';
-        }
 
         fetchRecommendations(item.id, tipoPerHero);
     }
@@ -2581,11 +2405,6 @@ async function fetchRecommendations(id, mediaType = currentType) {
         } catch {
             alert("Errore di connessione durante l'apertura del trailer.");
         }
-    }
-
-    function guardaDalPopup() {
-        if (!popupItem) return;
-        riproduciInPagina(popupItem);
     }
 
     function chiudiTrailerModal() {
@@ -2675,21 +2494,42 @@ async function fetchRecommendations(id, mediaType = currentType) {
     </div>
 </div>
 
-<div id="recModal" class="rec-modal" role="dialog" aria-modal="true" aria-label="Dettaglio consigliato">
+<div id="recModal" class="rec-modal" role="dialog" aria-modal="true" aria-label="Dettaglio titolo">
     <div class="rec-modal-card">
         <button type="button" class="trailer-modal-close" onclick="chiudiPopupConsigliato()">CHIUDI</button>
         <div class="rec-modal-body">
-            <img class="rec-modal-poster" id="recModalPoster" src="" alt="Poster">
-            <div class="rec-modal-content">
-                <div class="overview-modal-title" id="recModalTitle">Titolo</div>
-                <div class="rec-modal-meta" id="recModalMeta">---</div>
-                <div class="rec-modal-overview" id="recModalOverview">...</div>
-                <div class="rec-modal-actions">
-                    <button class="btn-action" type="button" onclick="guardaDalPopup()">Guarda</button>
-                    <button class="btn-favorite" id="recModalFavorite" type="button" onclick="toggleFavorite(popupItem); aggiornaStatoPreferitoPopup(popupItem);" tabindex="0" aria-label="Aggiungi ai preferiti" aria-pressed="false">♡</button>
-                    <button class="btn-action btn-trailer" type="button" onclick="showTrailer(popupItem)">Trailer</button>
+            <img class="hero-poster" id="heroPoster" src="https://via.placeholder.com/185x278?text=Caricamento..." alt="Poster">
+            <div class="hero-details">
+                <div class="hero-title" id="heroTitle">Caricamento...</div>
+                <div class="hero-meta" id="heroMeta">---</div>
+                <div class="hero-overview" id="heroOverview">...</div>
+                <button class="btn-action" type="button" onclick="apriTramaCompleta()" style="width: fit-content; margin-top: 4px;">Mostra altro</button>
+
+                <div class="episodes-selector" id="episodesFrame">
+                    <label>Stagione:
+                        <select id="seasonInput" tabindex="0"></select>
+                    </label>
+                    <label>Episodio:
+                        <select id="episodeInput" tabindex="0"></select>
+                    </label>
+                </div>
+
+                <div class="hero-actions">
+                    <button class="btn-play-large" id="btnPlay" onclick="riproduciInPagina()" tabindex="0" aria-label="Guarda ora">
+                        ▶
+                    </button>
+                    <button class="btn-favorite" id="btnFavorite" type="button" onclick="toggleFavorite(elementoSelezionato)" tabindex="0" aria-label="Aggiungi ai preferiti" aria-pressed="false">♡</button>
+                    <button class="btn-action btn-trailer" type="button" onclick="showTrailer()" tabindex="0">Trailer</button>
                 </div>
             </div>
+        </div>
+
+        <div style="min-width:0; margin-top:20px;">
+            <div class="recs-header" id="recsHeader" style="display:none; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+                <div class="section-title" id="recsTitle" style="margin:0;">Potrebbe piacerti anche</div>
+                <button class="recs-toggle" id="recsToggleBtn" type="button" onclick="toggleRecs()" aria-expanded="true">Nascondi ▴</button>
+            </div>
+            <div id="recsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(90px, 1fr)); gap:8px; width:100%;"></div>
         </div>
     </div>
 </div>
