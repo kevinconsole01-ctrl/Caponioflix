@@ -1,0 +1,24 @@
+{
+  "name": "Caponioflix Premium",
+  "short_name": "Caponioflix",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#181818",
+  "theme_color": "#181818",
+  "icons": [
+    {
+      "src": "Nuovo progetto (1).png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "Nuovo progetto (1).png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
