@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caponioflix Premium</title>
     <link rel="icon" type="image/png" href="Nuovo progetto (1).png">
+
+    <!-- PWA: consente di aprire il sito come app a schermo intero (senza barra indirizzi) una volta aggiunto alla home -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#181818">
+
+    <!-- iOS (Safari) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Caponioflix">
+    <link rel="apple-touch-icon" href="Nuovo progetto (1).png">
+
+    <!-- Android (Chrome) -->
+    <meta name="mobile-web-app-capable" content="yes">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -1504,11 +1518,27 @@
                 flex-shrink: 0;
             }
 
-            .controls-bar .view-btn,
-            .controls-bar .btn-random {
+            .controls-bar .view-btn {
                 padding: 8px 12px;
                 font-size: 0.85rem;
                 flex: 1 1 auto;
+            }
+
+            .controls-bar .btn-random {
+                padding: 0;
+                width: 36px;
+                height: 36px;
+                flex: 0 0 auto;
+                justify-content: center;
+                gap: 0;
+            }
+
+            .controls-bar .btn-random .random-label {
+                display: none;
+            }
+
+            .controls-bar .btn-random .dice-icon {
+                font-size: 1.1rem;
             }
 
             .type-selector {
@@ -1708,6 +1738,14 @@
 </div>
 
 <script>
+    // Registrazione service worker: necessaria su Android/Chrome perché il sito
+    // venga riconosciuto come "installabile" e si apra come app (senza barra indirizzi)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        });
+    }
+
     const API_KEY = "19a3e7d1a5356e8daa2323dabc5e1a2d";
     let currentType = 'movie';
     let risultatiRicerca = [];
