@@ -22,6 +22,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
+    <!-- Firebase: login utente e sincronizzazione preferiti/continua a guardare/consigliati tra dispositivi -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
     <style>
         :root {
             --bg-color: #181818;
@@ -1862,6 +1867,171 @@
             border-color: var(--accent);
         }
 
+        /* ===== Account / Login ===== */
+        .account-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #fff;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color var(--dur-fast) var(--ease-standard);
+        }
+
+        .account-btn:hover {
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        .account-btn.is-logged-in {
+            background: rgba(229, 9, 20, 0.16);
+            border-color: rgba(229, 9, 20, 0.5);
+        }
+
+        .auth-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.84);
+            z-index: 10005;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            cursor: pointer;
+        }
+
+        .auth-modal.is-open {
+            display: flex;
+            animation: modalBackdropIn var(--dur-base) var(--ease-out-smooth);
+        }
+
+        .auth-modal-card {
+            background: rgba(20, 20, 20, 0.97);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 12px;
+            max-width: 380px;
+            width: 100%;
+            padding: 28px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: modalContentIn var(--dur-slow) var(--ease-out-smooth);
+            cursor: default;
+        }
+
+        .auth-modal-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .auth-modal-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .auth-modal-subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .auth-modal-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .auth-modal-field label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .auth-modal-field input {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 6px;
+            padding: 10px 12px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .auth-modal-field input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .auth-modal-error {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            min-height: 1em;
+        }
+
+        .auth-modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .auth-modal-actions .btn-action {
+            background: var(--accent);
+            border: 1px solid var(--accent);
+            color: #fff;
+            border-radius: 8px;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .auth-modal-actions .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .auth-modal-switch {
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 16px;
+        }
+
+        .auth-modal-switch a {
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .auth-modal-account-info {
+            font-size: 0.9rem;
+            margin-bottom: 18px;
+            word-break: break-all;
+        }
+
+        .auth-sync-status {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .account-btn .account-btn-full-label {
+                display: none;
+            }
+        }
+
         /* ===== Consigliati / Quiz gusti ===== */
         .consigliati-section {
             display: none;
@@ -2010,6 +2180,9 @@
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Digita per cercare..." oninput="onInputSearch()" onkeydown="if(event.key === 'Enter') cercaImmediata()" tabindex="0" autocomplete="off">
             </div>
+            <button class="account-btn" id="accountBtn" type="button" onclick="apriModaleAccount()" tabindex="0">
+                <span id="accountBtnLabel">Accedi</span>
+            </button>
         </div>
     </header>
 
@@ -2132,6 +2305,211 @@
     let quizAnswers = {};
     let consigliatiCache = [];
     let currentView = 'home';
+
+    // ===== Firebase: account e sincronizzazione cloud =====
+    // 1. Vai su https://console.firebase.google.com, crea un progetto gratuito (Spark plan).
+    // 2. In "Autenticazione" > "Sign-in method" attiva il provider "Email/Password".
+    // 3. In "Firestore Database" crea un database (modalità produzione va bene, le regole sono sotto).
+    // 4. Vai in "Impostazioni progetto" > "Le tue app" > "Web" e copia qui sotto l'oggetto di configurazione.
+    const firebaseConfig = {
+        apiKey: "AIzaSyBTnm_NOA6kcboaRUSRo3HZ67sSSlI0f0Y",
+        authDomain: "caponioflix.firebaseapp.com",
+        projectId: "caponioflix",
+        storageBucket: "caponioflix.firebasestorage.app",
+        messagingSenderId: "183803072510",
+        appId: "1:183803072510:web:4a5602ef4be04dad8e7aaf"
+    };
+
+    let firebaseReady = false;
+    let auth = null;
+    let db = null;
+    try {
+        if (firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('INCOLLA')) {
+            firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            firebaseReady = true;
+        } else {
+            console.warn('Firebase non configurato: incolla la tua firebaseConfig per attivare login e sincronizzazione.');
+        }
+    } catch (e) {
+        console.warn('Impossibile inizializzare Firebase.', e);
+    }
+
+    let currentUser = null;
+    let isAuthRegisterMode = false;
+    let cloudSyncTimer = null;
+    let isApplyingCloudData = false;
+
+    function apriModaleAccount() {
+        document.getElementById('authModal').classList.add('is-open');
+        document.getElementById('authModalError').textContent = '';
+        aggiornaUIAccount();
+    }
+
+    function chiudiModaleAccount() {
+        document.getElementById('authModal').classList.remove('is-open');
+    }
+
+    function toggleAuthMode() {
+        isAuthRegisterMode = !isAuthRegisterMode;
+        document.getElementById('authModalTitle').textContent = isAuthRegisterMode ? 'Crea account' : 'Accedi';
+        document.getElementById('authModalSubtitle').textContent = isAuthRegisterMode
+            ? 'Crea un account per salvare i tuoi dati e ritrovarli su ogni dispositivo.'
+            : 'Accedi per sincronizzare preferiti, continua a guardare e consigliati su tutti i tuoi dispositivi.';
+        document.getElementById('authSubmitBtn').textContent = isAuthRegisterMode ? 'Registrati' : 'Accedi';
+        document.getElementById('authModalSwitch').innerHTML = isAuthRegisterMode
+            ? 'Hai già un account? <a onclick="toggleAuthMode()">Accedi</a>'
+            : 'Non hai un account? <a onclick="toggleAuthMode()">Registrati</a>';
+        document.getElementById('authModalError').textContent = '';
+    }
+
+    function eseguiAuthSubmit() {
+        if (!firebaseReady) {
+            document.getElementById('authModalError').textContent = 'Sincronizzazione non ancora configurata (manca firebaseConfig).';
+            return;
+        }
+        const email = document.getElementById('authEmailInput').value.trim();
+        const password = document.getElementById('authPasswordInput').value;
+        const errorEl = document.getElementById('authModalError');
+        errorEl.textContent = '';
+
+        if (!email || !password) {
+            errorEl.textContent = 'Inserisci email e password.';
+            return;
+        }
+
+        const submitBtn = document.getElementById('authSubmitBtn');
+        submitBtn.disabled = true;
+
+        const azione = isAuthRegisterMode
+            ? auth.createUserWithEmailAndPassword(email, password)
+            : auth.signInWithEmailAndPassword(email, password);
+
+        azione
+            .then(() => {
+                document.getElementById('authEmailInput').value = '';
+                document.getElementById('authPasswordInput').value = '';
+            })
+            .catch((err) => {
+                errorEl.textContent = tradurreErroreAuth(err);
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+            });
+    }
+
+    function eseguiLogout() {
+        if (auth) {
+            auth.signOut();
+        }
+    }
+
+    function tradurreErroreAuth(err) {
+        const code = err && err.code;
+        switch (code) {
+            case 'auth/email-already-in-use': return 'Esiste già un account con questa email.';
+            case 'auth/invalid-email': return 'Email non valida.';
+            case 'auth/weak-password': return 'La password deve avere almeno 6 caratteri.';
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+            case 'auth/invalid-credential': return 'Email o password non corrette.';
+            case 'auth/too-many-requests': return 'Troppi tentativi, riprova tra poco.';
+            default: return 'Si è verificato un errore. Riprova.';
+        }
+    }
+
+    function aggiornaUIAccount() {
+        const btnLabel = document.getElementById('accountBtnLabel');
+        const btn = document.getElementById('accountBtn');
+        const viewLoggedOut = document.getElementById('authViewLoggedOut');
+        const viewLoggedIn = document.getElementById('authViewLoggedIn');
+
+        if (currentUser) {
+            btnLabel.textContent = currentUser.email.split('@')[0];
+            btn.classList.add('is-logged-in');
+            viewLoggedOut.style.display = 'none';
+            viewLoggedIn.style.display = 'block';
+            document.getElementById('authLoggedInEmail').textContent = currentUser.email;
+        } else {
+            btnLabel.textContent = 'Accedi';
+            btn.classList.remove('is-logged-in');
+            viewLoggedOut.style.display = 'block';
+            viewLoggedIn.style.display = 'none';
+        }
+    }
+
+    function impostaStatoSync(testo) {
+        const el = document.getElementById('authSyncStatus');
+        if (el) el.textContent = testo;
+    }
+
+    // Carica i dati salvati su Firestore per l'utente loggato e aggiorna l'interfaccia
+    function caricaDatiCloud(uid) {
+        if (!db) return;
+        impostaStatoSync('Sincronizzazione in corso...');
+        db.collection('utenti').doc(uid).get()
+            .then((doc) => {
+                isApplyingCloudData = true;
+                if (doc.exists) {
+                    const dati = doc.data();
+                    favorites = Array.isArray(dati.favorites) ? dati.favorites : [];
+                    continueWatching = Array.isArray(dati.continueWatching) ? dati.continueWatching : [];
+                    tasteProfile = dati.tasteProfile || null;
+                    tasteSeenKeys = Array.isArray(dati.tasteSeenKeys) ? dati.tasteSeenKeys : [];
+                } else {
+                    // Primo accesso: carica quello che c'era in locale su questo dispositivo come punto di partenza
+                    loadFavorites();
+                    loadContinueWatching();
+                    loadTasteProfile();
+                }
+                isApplyingCloudData = false;
+                renderFavoritesSection();
+                if (typeof renderContinueSection === 'function') renderContinueSection();
+                if (typeof renderConsigliatiSection === 'function') renderConsigliatiSection();
+                salvaDatiCloud(true);
+                impostaStatoSync('Dati sincronizzati su questo account.');
+            })
+            .catch((err) => {
+                isApplyingCloudData = false;
+                console.warn('Impossibile caricare i dati dal cloud.', err);
+                impostaStatoSync('Impossibile sincronizzare: controlla la connessione.');
+            });
+    }
+
+    // Salva su Firestore lo stato attuale (con debounce per evitare troppe scritture ravvicinate)
+    function salvaDatiCloud(immediato) {
+        if (!db || !currentUser || isApplyingCloudData) return;
+        if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+
+        const esegui = () => {
+            db.collection('utenti').doc(currentUser.uid).set({
+                favorites,
+                continueWatching,
+                tasteProfile,
+                tasteSeenKeys,
+                aggiornatoIl: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).catch((err) => {
+                console.warn('Impossibile salvare i dati sul cloud.', err);
+            });
+        };
+
+        if (immediato) {
+            esegui();
+        } else {
+            cloudSyncTimer = setTimeout(esegui, 800);
+        }
+    }
+
+    if (firebaseReady) {
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+            aggiornaUIAccount();
+            if (user) {
+                caricaDatiCloud(user.uid);
+            }
+        });
+    }
 
     // Mappatura concettuale dei generi: ogni concetto ha gli ID genere corretti sia per film che per serie TV su TMDB
     const GENRE_CONCEPTS = {
@@ -2438,6 +2816,7 @@
         } catch {
             console.warn('Impossibile salvare i preferiti su localStorage.');
         }
+        salvaDatiCloud();
     }
 
     function getFavoriteKey(item) {
@@ -2569,6 +2948,7 @@
         } catch {
             console.warn('Impossibile salvare "continua a guardare" su localStorage.');
         }
+        salvaDatiCloud();
     }
 
     function getContinueKey(item) {
@@ -2772,6 +3152,7 @@
         } catch {
             console.warn('Impossibile salvare i gusti su localStorage.');
         }
+        salvaDatiCloud();
     }
 
     function saveTasteSeenKeys() {
@@ -2780,6 +3161,7 @@
         } catch {
             console.warn('Impossibile salvare i titoli già consigliati.');
         }
+        salvaDatiCloud();
     }
 
     let quizSelezioneCorrente = new Set();
@@ -3708,6 +4090,21 @@ async function fetchRecommendations(id, mediaType = currentType) {
             }
         });
 
+        const authModal = document.getElementById('authModal');
+        const authModalCard = document.querySelector('.auth-modal-card');
+        if (authModal) {
+            authModal.addEventListener('click', (event) => {
+                if (event.target === authModal) {
+                    chiudiModaleAccount();
+                }
+            });
+        }
+        if (authModalCard) {
+            authModalCard.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+        }
+
         overviewModal.addEventListener('click', (event) => {
             if (event.target === overviewModal) {
                 chiudiTramaModal();
@@ -4421,6 +4818,41 @@ async function fetchRecommendations(id, mediaType = currentType) {
 <div id="trailerModal" class="trailer-modal" role="dialog" aria-modal="true" aria-label="Anteprima trailer">
     <button type="button" class="trailer-modal-close" onclick="chiudiTrailerModal()" aria-label="Chiudi">✕</button>
     <iframe id="trailerFrame" class="trailer-modal-frame" width="80%" height="80%" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<div id="authModal" class="auth-modal" role="dialog" aria-modal="true" aria-label="Accedi al tuo account">
+    <div class="auth-modal-card">
+        <button class="auth-modal-close" type="button" onclick="chiudiModaleAccount()" aria-label="Chiudi">✕</button>
+
+        <div id="authViewLoggedOut">
+            <div class="auth-modal-title" id="authModalTitle">Accedi</div>
+            <div class="auth-modal-subtitle" id="authModalSubtitle">Accedi per sincronizzare preferiti, continua a guardare e consigliati su tutti i tuoi dispositivi.</div>
+            <div class="auth-modal-error" id="authModalError"></div>
+            <div class="auth-modal-field">
+                <label for="authEmailInput">Email</label>
+                <input type="email" id="authEmailInput" autocomplete="email" placeholder="tuamail@esempio.it">
+            </div>
+            <div class="auth-modal-field">
+                <label for="authPasswordInput">Password</label>
+                <input type="password" id="authPasswordInput" autocomplete="current-password" placeholder="Almeno 6 caratteri">
+            </div>
+            <div class="auth-modal-actions">
+                <button class="btn-action" type="button" id="authSubmitBtn" onclick="eseguiAuthSubmit()">Accedi</button>
+            </div>
+            <div class="auth-modal-switch" id="authModalSwitch">
+                Non hai un account? <a onclick="toggleAuthMode()">Registrati</a>
+            </div>
+        </div>
+
+        <div id="authViewLoggedIn" style="display:none;">
+            <div class="auth-modal-title">Account</div>
+            <div class="auth-modal-account-info">Accesso effettuato come<br><strong id="authLoggedInEmail"></strong></div>
+            <div class="auth-sync-status" id="authSyncStatus"></div>
+            <div class="auth-modal-actions" style="margin-top:18px;">
+                <button class="btn-action btn-secondary" type="button" onclick="eseguiLogout()">Esci</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="overviewModal" class="overview-modal" role="dialog" aria-modal="true" aria-label="Trama completa">
