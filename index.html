@@ -2014,6 +2014,45 @@
             text-decoration: underline;
         }
 
+        .auth-modal-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            font-size: 0.8rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .auth-remember-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .auth-remember-label input[type="checkbox"] {
+            accent-color: var(--accent);
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+
+        .auth-forgot-link {
+            color: var(--text-muted);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .auth-forgot-link:hover {
+            color: #fff;
+        }
+
+        .auth-modal-error.is-success {
+            color: #4cd964;
+        }
+
         .auth-modal-account-info {
             font-size: 0.9rem;
             margin-bottom: 18px;
@@ -2361,7 +2400,9 @@
         document.getElementById('authModalSwitch').innerHTML = isAuthRegisterMode
             ? 'Hai già un account? <a onclick="toggleAuthMode()">Accedi</a>'
             : 'Non hai un account? <a onclick="toggleAuthMode()">Registrati</a>';
+        document.getElementById('authRememberRow').style.display = isAuthRegisterMode ? 'none' : 'flex';
         document.getElementById('authModalError').textContent = '';
+        document.getElementById('authModalError').classList.remove('is-success');
     }
 
     function eseguiAuthSubmit() {
@@ -2372,6 +2413,7 @@
         const email = document.getElementById('authEmailInput').value.trim();
         const password = document.getElementById('authPasswordInput').value;
         const errorEl = document.getElementById('authModalError');
+        errorEl.classList.remove('is-success');
         errorEl.textContent = '';
 
         if (!email || !password) {
@@ -2382,11 +2424,19 @@
         const submitBtn = document.getElementById('authSubmitBtn');
         submitBtn.disabled = true;
 
-        const azione = isAuthRegisterMode
-            ? auth.createUserWithEmailAndPassword(email, password)
-            : auth.signInWithEmailAndPassword(email, password);
+        const ricordami = document.getElementById('authRememberCheckbox').checked;
+        // "Ricordami" attivo -> resta loggato anche dopo aver chiuso il browser (persistenza LOCAL, è il default di Firebase).
+        // "Ricordami" disattivo -> il login viene dimenticato alla chiusura della scheda/browser (persistenza SESSION).
+        const persistenza = ricordami
+            ? firebase.auth.Auth.Persistence.LOCAL
+            : firebase.auth.Auth.Persistence.SESSION;
 
-        azione
+        auth.setPersistence(persistenza)
+            .then(() => {
+                return isAuthRegisterMode
+                    ? auth.createUserWithEmailAndPassword(email, password)
+                    : auth.signInWithEmailAndPassword(email, password);
+            })
             .then(() => {
                 document.getElementById('authEmailInput').value = '';
                 document.getElementById('authPasswordInput').value = '';
@@ -2396,6 +2446,30 @@
             })
             .finally(() => {
                 submitBtn.disabled = false;
+            });
+    }
+
+    function richiediResetPassword() {
+        if (!firebaseReady) {
+            document.getElementById('authModalError').textContent = 'Sincronizzazione non ancora configurata (manca firebaseConfig).';
+            return;
+        }
+        const email = document.getElementById('authEmailInput').value.trim();
+        const errorEl = document.getElementById('authModalError');
+        errorEl.classList.remove('is-success');
+
+        if (!email) {
+            errorEl.textContent = 'Inserisci la tua email qui sopra, poi clicca di nuovo su "Password dimenticata?".';
+            return;
+        }
+
+        auth.sendPasswordResetEmail(email)
+            .then(() => {
+                errorEl.textContent = 'Email inviata: controlla la posta per reimpostare la password.';
+                errorEl.classList.add('is-success');
+            })
+            .catch((err) => {
+                errorEl.textContent = tradurreErroreAuth(err);
             });
     }
 
@@ -4835,6 +4909,13 @@ async function fetchRecommendations(id, mediaType = currentType) {
             <div class="auth-modal-field">
                 <label for="authPasswordInput">Password</label>
                 <input type="password" id="authPasswordInput" autocomplete="current-password" placeholder="Almeno 6 caratteri">
+            </div>
+            <div class="auth-modal-row" id="authRememberRow">
+                <label class="auth-remember-label">
+                    <input type="checkbox" id="authRememberCheckbox" checked>
+                    Ricordami
+                </label>
+                <a class="auth-forgot-link" id="authForgotLink" onclick="richiediResetPassword()">Password dimenticata?</a>
             </div>
             <div class="auth-modal-actions">
                 <button class="btn-action" type="button" id="authSubmitBtn" onclick="eseguiAuthSubmit()">Accedi</button>
