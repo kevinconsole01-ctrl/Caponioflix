@@ -313,16 +313,56 @@
         }
 
         .search-box {
+            position: relative;
             display: flex;
-            gap: 8px;
+            align-items: center;
             flex-grow: 1;
+            min-width: 160px;
         }
 
-        .search-box input[type="text"],
+        .search-box .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            stroke: var(--text-muted);
+            pointer-events: none;
+            transition: stroke var(--dur-fast) var(--ease-standard);
+            z-index: 1;
+        }
+
         .search-box input[type="search"] {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             border-radius: 999px;
+            color: var(--text-color);
+            padding: 10px 38px 10px 40px;
+            font-size: 0.92rem;
+            outline: none;
             -webkit-appearance: none;
             appearance: none;
+            transition: border-color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard);
+        }
+
+        .search-box input[type="search"]::placeholder {
+            color: rgba(255, 255, 255, 0.34);
+        }
+
+        .search-box input[type="search"]:hover {
+            border-color: rgba(255, 255, 255, 0.24);
+        }
+
+        .search-box input[type="search"]:focus {
+            border-color: var(--accent);
+            background: rgba(229, 9, 20, 0.07);
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.16);
+        }
+
+        .search-box input[type="search"]:focus ~ .search-icon {
+            stroke: var(--accent);
         }
 
         .search-box input[type="search"]::-webkit-search-decoration,
@@ -330,6 +370,42 @@
         .search-box input[type="search"]::-webkit-search-results-button,
         .search-box input[type="search"]::-webkit-search-results-decoration {
             -webkit-appearance: none;
+        }
+
+        .search-clear-btn {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%) scale(0.8);
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
+        }
+
+        .search-clear-btn.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(-50%) scale(1);
+        }
+
+        .search-clear-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .search-clear-btn svg {
+            width: 12px;
+            height: 12px;
         }
 
         .btn-random {
@@ -2455,7 +2531,11 @@
                 <span class="dice-icon">🎲</span><span class="random-label">Random</span>
             </button>
             <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input type="search" id="searchInput" name="site-search" placeholder="Digita per cercare..." oninput="onInputSearch()" onkeydown="if(event.key === 'Enter') cercaImmediata()" tabindex="0" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other">
+                <button type="button" class="search-clear-btn" id="searchClearBtn" onclick="pulisciRicerca()" aria-label="Cancella ricerca">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
             </div>
             <button class="account-btn" id="accountBtn" type="button" onclick="apriModaleAccount()" tabindex="0">
                 <span id="accountBtnLabel">Accedi</span>
@@ -4186,6 +4266,7 @@
 
     function onInputSearch() {
         const query = document.getElementById('searchInput').value.trim();
+        aggiornaVisibilitaClearRicerca();
 
         if (query) {
             assicuraVistaHomePerRicerca();
@@ -4195,6 +4276,24 @@
         debounceTimer = setTimeout(() => {
             cerca(true);
         }, SEARCH_DEBOUNCE_MS);
+    }
+
+    function aggiornaVisibilitaClearRicerca() {
+        const input = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('searchClearBtn');
+        if (input && clearBtn) {
+            clearBtn.classList.toggle('is-visible', input.value.trim().length > 0);
+        }
+    }
+
+    function pulisciRicerca() {
+        const input = document.getElementById('searchInput');
+        if (!input) return;
+        input.value = '';
+        input.focus();
+        aggiornaVisibilitaClearRicerca();
+        clearTimeout(debounceTimer);
+        cerca(true);
     }
 
     function cercaImmediata() {
