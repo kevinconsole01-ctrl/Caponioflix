@@ -1635,6 +1635,351 @@
                 font-size: 0.8rem;
             }
         }
+
+        /* ===== Continua a guardare ===== */
+        .continue-section {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            padding: 4px 0;
+        }
+
+        .continue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            align-items: start;
+        }
+
+        .continue-card {
+            position: relative;
+            min-height: 100%;
+        }
+
+        .continue-card .card-img {
+            height: 175px;
+        }
+
+        .continue-card .card-info {
+            min-height: 44px;
+        }
+
+        .continue-progress-bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.18);
+            z-index: 2;
+        }
+
+        .continue-progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+        }
+
+        .continue-progress-label {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.72);
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 2;
+        }
+
+        .btn-progress {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            width: 46px;
+            height: 46px;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .btn-progress.active {
+            background: #fff;
+            color: var(--accent);
+            border-color: #fff;
+        }
+
+        /* ===== Modale progresso ===== */
+        .progress-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.84);
+            z-index: 10003;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            cursor: pointer;
+        }
+
+        .progress-modal.is-open {
+            display: flex;
+            animation: modalBackdropIn var(--dur-base) var(--ease-out-smooth);
+        }
+
+        .progress-modal-card {
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 12px;
+            max-width: 420px;
+            width: 100%;
+            padding: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: modalContentIn var(--dur-slow) var(--ease-out-smooth);
+            cursor: default;
+        }
+
+        .progress-modal-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            padding-right: 24px;
+        }
+
+        .progress-modal-subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 18px;
+        }
+
+        .progress-slider-values {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .progress-slider-values span:nth-child(2) {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 0.85rem;
+        }
+
+        .progress-slider {
+            position: relative;
+            height: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .progress-slider-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .progress-slider-fill {
+            position: absolute;
+            left: 0;
+            height: 4px;
+            border-radius: 999px;
+            background: var(--accent);
+        }
+
+        .progress-slider input[type="range"] {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            margin: 0;
+            background: transparent;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .progress-slider input[type="range"]::-webkit-slider-runnable-track {
+            background: transparent;
+            height: 30px;
+        }
+
+        .progress-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            margin-top: 0;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid var(--accent);
+            cursor: pointer;
+            transform: translateY(7px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .progress-slider input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid var(--accent);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .progress-slider input[type="range"]:focus {
+            outline: none;
+        }
+
+        .progress-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .progress-modal-actions .btn-action {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #fff;
+            border-radius: 8px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .progress-modal-actions .btn-save {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* ===== Consigliati / Quiz gusti ===== */
+        .consigliati-section {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            padding: 4px 0;
+        }
+
+        .consigliati-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 14px;
+            padding: 28px;
+            max-width: 620px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .quiz-progress {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 10px;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.02em;
+            margin-bottom: 20px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #fff;
+            border-radius: 10px;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option-btn:hover {
+            background: rgba(229, 9, 20, 0.25);
+            border-color: var(--accent);
+        }
+
+        .quiz-option-btn.selected {
+            background: var(--accent);
+            border-color: var(--accent);
+            font-weight: 700;
+        }
+
+        .quiz-restart-btn {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            padding: 8px 16px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .consigliati-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            align-items: start;
+        }
+
+        .consigliati-more-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 6px;
+        }
+
+        .btn-load-more-consigliati {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            padding: 10px 22px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-load-more-consigliati:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 600px) {
+            .quiz-card {
+                padding: 18px;
+            }
+
+            .quiz-question {
+                font-size: 1.1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1656,7 +2001,9 @@
             <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Apri filtri" aria-expanded="false">☰</button>
             <button class="view-btn active" id="homeViewBtn" type="button" onclick="setView('home')" tabindex="0">Home</button>
             <button class="view-btn" id="favoritesViewBtn" type="button" onclick="setView('favorites')" tabindex="0">Preferiti</button>
+            <button class="view-btn" id="continueViewBtn" type="button" onclick="setView('continue')" tabindex="0">Continua a guardare</button>
             <button class="view-btn" id="platformsViewBtn" type="button" onclick="setView('platforms')" tabindex="0">Top 10</button>
+            <button class="view-btn" id="consigliatiViewBtn" type="button" onclick="setView('consigliati')" tabindex="0">Consigliati</button>
             <button class="btn-random" id="randomBtn" type="button" onclick="apriTitoloRandom()" tabindex="0" aria-label="Scopri un titolo a caso">
                 <span class="dice-icon">🎲</span><span class="random-label">Random</span>
             </button>
@@ -1712,6 +2059,17 @@
                 <div class="section-title">Preferiti</div>
                 <div class="favorites-grid" id="favoritesGrid"></div>
             </div>
+            <div class="continue-section" id="continueSection">
+                <div class="section-title">Continua a guardare</div>
+                <div class="continue-grid" id="continueGrid"></div>
+            </div>
+            <div class="consigliati-section" id="consigliatiSection">
+                <div class="consigliati-header">
+                    <div class="section-title" style="margin:0;">Consigliati per te</div>
+                    <button type="button" class="quiz-restart-btn" id="quizRestartBtn" style="display:none;" onclick="riavviaQuiz()">Rifai il quiz</button>
+                </div>
+                <div id="consigliatiContent"></div>
+            </div>
             <div class="platforms-section" id="platformsSection">
                 <div class="section-title">Top 10 · Piattaforme Streaming</div>
                 <div class="platform-tabs" id="platformTabs"></div>
@@ -1761,9 +2119,239 @@
     let selectedYearMax = YEAR_MAX;
     const SEARCH_DEBOUNCE_MS = 500;
     const FAVORITES_STORAGE_KEY = 'caponioflix_favorites';
+    const CONTINUE_STORAGE_KEY = 'caponioflix_continue_watching';
+    const TASTE_STORAGE_KEY = 'caponioflix_gusti_profilo';
+    const TASTE_SEEN_KEY = 'caponioflix_gusti_visti';
     let debounceTimer;
     let favorites = [];
+    let continueWatching = [];
+    let elementoRuntimeMinuti = null;
+    let tasteProfile = null;
+    let tasteSeenKeys = [];
+    let quizStep = 0;
+    let quizAnswers = {};
+    let consigliatiCache = [];
     let currentView = 'home';
+
+    // Mappatura concettuale dei generi: ogni concetto ha gli ID genere corretti sia per film che per serie TV su TMDB
+    const GENRE_CONCEPTS = {
+        azione_avventura:      { label: 'Azione e avventura',            movie: [28, 12],   tv: [10759] },
+        animazione:            { label: 'Animazione',                     movie: [16],       tv: [16] },
+        commedia:               { label: 'Commedia',                      movie: [35],       tv: [35] },
+        crime:                  { label: 'Crime e investigativo',         movie: [80],       tv: [80] },
+        documentario:           { label: 'Documentario',                  movie: [99],       tv: [99] },
+        dramma:                 { label: 'Dramma',                        movie: [18],       tv: [18] },
+        famiglia:               { label: 'Famiglia',                      movie: [10751],    tv: [10751] },
+        fantascienza_fantasy:   { label: 'Fantascienza e fantasy',        movie: [878, 14],  tv: [10765] },
+        horror:                 { label: 'Horror',                       movie: [27],       tv: [] },
+        mistero:                { label: 'Mistero',                      movie: [9648],     tv: [9648] },
+        musica:                 { label: 'Musical e biopic musicali',     movie: [10402],    tv: [] },
+        romantico:              { label: 'Romantico',                    movie: [10749],    tv: [] },
+        thriller:               { label: 'Thriller',                     movie: [53],       tv: [] },
+        guerra:                 { label: 'Guerra e conflitti storici',    movie: [10752],    tv: [10768] },
+        storico_biografico:     { label: 'Storico e biografico',         movie: [36],       tv: [] },
+        western:                { label: 'Western',                      movie: [37],       tv: [37] }
+    };
+
+    function opzioniGenereQuiz() {
+        return Object.entries(GENRE_CONCEPTS).map(([key, data]) => ({ label: data.label, genreKey: key }));
+    }
+
+    const QUIZ_QUESTIONS = [
+        {
+            question: 'Quali generi ami di più? Scegli tutti quelli che vuoi.',
+            multiSelect: true,
+            options: opzioniGenereQuiz()
+        },
+        {
+            question: 'Ci sono generi che proprio non fanno per te? Puoi selezionarne più di uno, oppure saltare la domanda.',
+            multiSelect: true,
+            optional: true,
+            options: opzioniGenereQuiz().map(o => ({ label: o.label, avoidGenreKey: o.genreKey }))
+        },
+        {
+            question: 'Che atmosfera cerchi di solito quando guardi qualcosa? Puoi selezionarne più di una.',
+            multiSelect: true,
+            options: [
+                { label: 'Leggera e spensierata', genreKeys: ['commedia', 'animazione'] },
+                { label: 'Intensa ed emotivamente coinvolgente', genreKeys: ['dramma', 'romantico'] },
+                { label: 'Adrenalinica, piena d\'azione', genreKeys: ['azione_avventura', 'thriller'] },
+                { label: 'Cupa e inquietante', genreKeys: ['horror', 'mistero'] },
+                { label: 'Epica e visionaria', genreKeys: ['fantascienza_fantasy', 'guerra'] },
+                { label: 'Intellettuale e stimolante', genreKeys: ['documentario', 'storico_biografico'] },
+                { label: 'Assurda e demenziale', genreKeys: ['commedia'] },
+                { label: 'Investigativa, con misteri da risolvere', genreKeys: ['crime', 'mistero'] }
+            ]
+        },
+        {
+            question: 'Con chi guardi più spesso film o serie? Puoi selezionarne più di una.',
+            multiSelect: true,
+            optional: true,
+            options: [
+                { label: 'Da solo/a, mi piace concentrarmi', genreKeys: ['mistero', 'thriller'] },
+                { label: 'In coppia', genreKeys: ['romantico', 'dramma'] },
+                { label: 'Con tutta la famiglia, anche con bambini', genreKeys: ['famiglia', 'animazione'] },
+                { label: 'Con gli amici, per una serata movimentata', genreKeys: ['commedia', 'azione_avventura'] }
+            ]
+        },
+        {
+            question: 'Quanto ami i colpi di scena e i finali a sorpresa?',
+            multiSelect: false,
+            options: [
+                { label: 'Moltissimo, sono ciò che cerco di più', genreKeys: ['mistero', 'thriller'] },
+                { label: 'Mi piacciono se ben fatti, ma non sono essenziali' },
+                { label: 'Non mi interessano particolarmente' }
+            ]
+        },
+        {
+            question: 'Ti piacciono le storie tratte da libri, fumetti o eventi realmente accaduti? Puoi selezionarne più di una.',
+            multiSelect: true,
+            optional: true,
+            options: [
+                { label: 'Adattamenti di romanzi e libri', genreKeys: ['dramma', 'storico_biografico'] },
+                { label: 'Fumetti e supereroi', genreKeys: ['fantascienza_fantasy', 'azione_avventura'] },
+                { label: 'Storie vere e biografie', genreKeys: ['storico_biografico', 'documentario'] },
+                { label: 'Preferisco le storie originali, non tratte da altro' }
+            ]
+        },
+        {
+            question: 'Cosa vuoi guardare?',
+            multiSelect: false,
+            options: [
+                { label: 'Solo film', typePref: 'movie' },
+                { label: 'Solo serie TV', typePref: 'tv' },
+                { label: 'Sia film che serie TV', typePref: 'both' }
+            ]
+        },
+        {
+            question: 'Se guardi serie TV, che formato preferisci?',
+            multiSelect: false,
+            options: [
+                { label: 'Miniserie brevi, con poche puntate', tvType: 2 },
+                { label: 'Serie classiche con tante stagioni', tvType: 4 },
+                { label: 'Indifferente, guardo entrambi i formati' }
+            ]
+        },
+        {
+            question: 'Da che epoca preferisci che arrivino i tuoi titoli? Puoi selezionarne più di una.',
+            multiSelect: true,
+            options: [
+                { label: 'Classici, prima degli anni \'80', yearMin: YEAR_MIN, yearMax: 1979 },
+                { label: 'Anni \'80 e \'90', yearMin: 1980, yearMax: 1999 },
+                { label: 'Anni 2000', yearMin: 2000, yearMax: 2009 },
+                { label: 'Anni 2010', yearMin: 2010, yearMax: 2019 },
+                { label: 'Uscite più recenti', yearMin: 2020, yearMax: YEAR_MAX }
+            ]
+        },
+        {
+            question: 'Quanto deve durare un film per te? Puoi selezionarne più di una (vale solo per i film).',
+            multiSelect: true,
+            options: [
+                { label: 'Breve, meno di 90 minuti', runtimeMin: 0, runtimeMax: 89 },
+                { label: 'Formato standard, 90-120 minuti', runtimeMin: 90, runtimeMax: 120 },
+                { label: 'Lungo, 120-160 minuti', runtimeMin: 120, runtimeMax: 160 },
+                { label: 'Kolossal, oltre 160 minuti', runtimeMin: 160, runtimeMax: 400 },
+                { label: 'Non ho preferenze sulla durata', runtimeMin: 0, runtimeMax: 400 }
+            ]
+        },
+        {
+            question: 'Da dove preferisci che arrivino i tuoi film e le tue serie? Puoi selezionarne più di una.',
+            multiSelect: true,
+            options: [
+                { label: 'Cinema hollywoodiano / americano', languages: ['en'] },
+                { label: 'Cinema europeo (Italia, Francia, Spagna, UK...)', languages: ['it', 'fr', 'es', 'de', 'en-GB'] },
+                { label: 'Cinema e serie asiatiche (Giappone, Corea, Cina)', languages: ['ja', 'ko', 'zh'] },
+                { label: 'Anime giapponesi', languages: ['ja'], genreKeys: ['animazione'] },
+                { label: 'Non ho preferenze sulla provenienza', languages: [] }
+            ]
+        },
+        {
+            question: 'Quali piattaforme di streaming usi di più? Puoi selezionarne più di una.',
+            multiSelect: true,
+            optional: true,
+            options: [
+                { label: 'Netflix', platformIds: [8] },
+                { label: 'Disney+', platformIds: [337] },
+                { label: 'Amazon Prime Video', platformIds: [119] },
+                { label: 'Apple TV+', platformIds: [2] },
+                { label: 'Paramount+', platformIds: [531] },
+                { label: 'Nessuna in particolare, guardo da più fonti' }
+            ]
+        },
+        {
+            question: 'Quanti contenuti forti (violenza, linguaggio scabroso, scene crude) riesci a tollerare?',
+            multiSelect: false,
+            options: [
+                { label: 'Preferisco contenuti leggeri, adatti a tutti', certificationMax: 'PG' },
+                { label: 'Un livello moderato va benissimo', certificationMax: 'PG-13' },
+                { label: 'Nessun limite, anche contenuti forti e crudi' }
+            ]
+        },
+        {
+            question: 'Ti piacciono i franchise, le saghe e i sequel, oppure preferisci storie autoconclusive? Puoi selezionarne più di una.',
+            multiSelect: true,
+            optional: true,
+            options: [
+                { label: 'Adoro le saghe e gli universi condivisi', genreKeys: ['fantascienza_fantasy', 'azione_avventura'] },
+                { label: 'Preferisco storie autoconclusive, un film e basta', genreKeys: ['dramma'] },
+                { label: 'Mi va bene entrambi' }
+            ]
+        },
+        {
+            question: 'Quanto ti piace ridere durante un film o una serie?',
+            multiSelect: false,
+            options: [
+                { label: 'Moltissimo, la commedia è il mio genere preferito', genreKeys: ['commedia'] },
+                { label: 'Un po\' di leggerezza è sempre gradita', genreKeys: ['commedia'] },
+                { label: 'Preferisco altri toni, la commedia non è essenziale per me' }
+            ]
+        },
+        {
+            question: 'Quanto ti emoziona la colonna sonora o la componente musicale di un\'opera?',
+            multiSelect: false,
+            options: [
+                { label: 'Moltissimo, adoro i musical e i film musicali', genreKeys: ['musica'] },
+                { label: 'Mi piace se presente, ma non è indispensabile' },
+                { label: 'Non mi interessa particolarmente' }
+            ]
+        },
+        {
+            question: 'Preferisci storie ambientate nella realtà quotidiana o in mondi immaginari e fantastici?',
+            multiSelect: false,
+            options: [
+                { label: 'Realtà quotidiana, storie plausibili', genreKeys: ['dramma', 'crime'] },
+                { label: 'Mondi fantastici e immaginari', genreKeys: ['fantascienza_fantasy'] },
+                { label: 'Mi piacciono entrambi allo stesso modo' }
+            ]
+        },
+        {
+            question: 'Quanto ami le storie con al centro relazioni sentimentali?',
+            multiSelect: false,
+            options: [
+                { label: 'Moltissimo, sono un elemento che cerco sempre', genreKeys: ['romantico'] },
+                { label: 'Va bene se presenti, ma non devono essere il fulcro' },
+                { label: 'Preferisco evitarle quando possibile', avoidGenreKey: 'romantico' }
+            ]
+        },
+        {
+            question: 'Quanto deve essere apprezzato dalla critica un titolo per interessarti?',
+            multiSelect: false,
+            options: [
+                { label: 'Voglio solo capolavori con voti altissimi', voteMin: 7.5 },
+                { label: 'Un buon equilibrio tra qualità e varietà', voteMin: 6 },
+                { label: 'Anche titoli di nicchia poco votati, non mi importa', voteMin: 0 }
+            ]
+        },
+        {
+            question: 'Preferisci titoli famosi o scoperte di nicchia?',
+            multiSelect: false,
+            options: [
+                { label: 'Solo blockbuster e grandi successi', popolarita: 'blockbuster' },
+                { label: 'Un mix equilibrato', popolarita: 'mix' },
+                { label: 'Chicche di nicchia, poco conosciute', popolarita: 'nicchia' }
+            ]
+        }
+    ];
 
     // Platform data: TMDB watch provider IDs (regione IT)
     const PLATFORMS = [
@@ -1964,18 +2552,607 @@
         });
     }
 
+    /* ===================== CONTINUA A GUARDARE ===================== */
+
+    function loadContinueWatching() {
+        try {
+            const saved = localStorage.getItem(CONTINUE_STORAGE_KEY);
+            continueWatching = saved ? JSON.parse(saved) : [];
+        } catch {
+            continueWatching = [];
+        }
+    }
+
+    function saveContinueWatching() {
+        try {
+            localStorage.setItem(CONTINUE_STORAGE_KEY, JSON.stringify(continueWatching));
+        } catch {
+            console.warn('Impossibile salvare "continua a guardare" su localStorage.');
+        }
+    }
+
+    function getContinueKey(item) {
+        return `${item?.type || 'movie'}:${item?.id}`;
+    }
+
+    function trovaVoceContinua(item) {
+        if (!item) return null;
+        const key = getContinueKey(item);
+        return continueWatching.find(entry => getContinueKey(entry) === key) || null;
+    }
+
+    function aggiornaProgressoButton(item, runtimeMinuti) {
+        const btn = document.getElementById('btnProgress');
+        if (!btn) return;
+        const tipo = item?.type || currentType;
+        elementoRuntimeMinuti = (tipo === 'movie' && runtimeMinuti) ? runtimeMinuti : null;
+
+        if (tipo !== 'movie' || !elementoRuntimeMinuti) {
+            btn.style.display = 'none';
+            return;
+        }
+
+        btn.style.display = 'inline-flex';
+        const voce = trovaVoceContinua(item);
+        btn.classList.toggle('active', !!voce);
+        btn.setAttribute('aria-label', voce ? 'Aggiorna posizione visione' : 'Salva posizione visione');
+    }
+
+    function apriProgressoModal() {
+        if (!elementoSelezionato || !elementoRuntimeMinuti) return;
+        const nome = elementoSelezionato.title || elementoSelezionato.name || '';
+        document.getElementById('progressModalTitle').textContent = `Continua a guardare: ${nome}`;
+        document.getElementById('progressTotalLabel').textContent = `/ ${elementoRuntimeMinuti} min`;
+
+        const input = document.getElementById('progressInput');
+        input.max = elementoRuntimeMinuti;
+        const voce = trovaVoceContinua(elementoSelezionato);
+        input.value = voce ? Math.min(voce.positionMinutes, elementoRuntimeMinuti) : 0;
+
+        aggiornaLabelProgresso();
+        document.getElementById('progressModal').classList.add('is-open');
+    }
+
+    function chiudiProgressoModal() {
+        document.getElementById('progressModal').classList.remove('is-open');
+    }
+
+    function aggiornaLabelProgresso() {
+        const input = document.getElementById('progressInput');
+        const valore = Number(input.value);
+        const max = Number(input.max) || 1;
+        document.getElementById('progressCurrentLabel').textContent = `${valore} min`;
+        const fill = document.getElementById('progressSliderFill');
+        if (fill) fill.style.width = `${(valore / max) * 100}%`;
+    }
+
+    function salvaProgresso() {
+        if (!elementoSelezionato || !elementoRuntimeMinuti) return;
+        const input = document.getElementById('progressInput');
+        const positionMinutes = Number(input.value);
+        const key = getContinueKey(elementoSelezionato);
+
+        const voce = {
+            id: elementoSelezionato.id,
+            type: 'movie',
+            title: elementoSelezionato.title || '',
+            name: elementoSelezionato.name || '',
+            poster_path: elementoSelezionato.poster_path || '',
+            overview: elementoSelezionato.overview || '',
+            release_date: elementoSelezionato.release_date || '',
+            vote_average: elementoSelezionato.vote_average || null,
+            runtimeMinutes: elementoRuntimeMinuti,
+            positionMinutes,
+            updatedAt: Date.now()
+        };
+
+        const idx = continueWatching.findIndex(entry => getContinueKey(entry) === key);
+        if (idx >= 0) {
+            continueWatching[idx] = voce;
+        } else {
+            continueWatching.unshift(voce);
+        }
+
+        saveContinueWatching();
+        aggiornaProgressoButton(elementoSelezionato, elementoRuntimeMinuti);
+        if (currentView === 'continue') {
+            renderContinueSection();
+        }
+        chiudiProgressoModal();
+    }
+
+    function rimuoviDaContinua(item, event) {
+        if (event) event.stopPropagation();
+        const key = getContinueKey(item);
+        continueWatching = continueWatching.filter(entry => getContinueKey(entry) !== key);
+        saveContinueWatching();
+        renderContinueSection();
+        if (elementoSelezionato) {
+            aggiornaProgressoButton(elementoSelezionato, elementoRuntimeMinuti);
+        }
+    }
+
+    function renderContinueSection() {
+        const container = document.getElementById('continueGrid');
+        if (!container) return;
+
+        if (!continueWatching.length) {
+            container.innerHTML = '<div class="favorites-empty">Nessun film in corso. Apri un film e tocca ⏱ per salvare a che minuto sei arrivato.</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+        continueWatching
+            .slice()
+            .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
+            .forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'card-item continue-card';
+                card.tabIndex = 0;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'favorite-remove';
+                removeBtn.textContent = '✕';
+                removeBtn.setAttribute('aria-label', 'Rimuovi da continua a guardare');
+                removeBtn.onclick = (event) => rimuoviDaContinua(item, event);
+
+                const posterPath = item.poster_path
+                    ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+                    : 'https://via.placeholder.com/185x278?text=No+Cover';
+
+                const img = document.createElement('img');
+                img.className = 'card-img';
+                img.src = posterPath;
+                img.alt = item.title || item.name || 'Continua a guardare';
+
+                const info = document.createElement('div');
+                info.className = 'card-info';
+                const titleEl = document.createElement('div');
+                titleEl.className = 'card-title';
+                titleEl.textContent = item.title || item.name || '';
+                info.appendChild(titleEl);
+
+                const percent = item.runtimeMinutes ? Math.min(100, Math.round((item.positionMinutes / item.runtimeMinutes) * 100)) : 0;
+
+                const progressLabel = document.createElement('div');
+                progressLabel.className = 'continue-progress-label';
+                progressLabel.textContent = `${item.positionMinutes}/${item.runtimeMinutes} min`;
+
+                const progressBar = document.createElement('div');
+                progressBar.className = 'continue-progress-bar';
+                const progressFill = document.createElement('div');
+                progressFill.className = 'continue-progress-bar-fill';
+                progressFill.style.width = `${percent}%`;
+                progressBar.appendChild(progressFill);
+
+                card.appendChild(removeBtn);
+                card.appendChild(img);
+                card.appendChild(progressLabel);
+                card.appendChild(progressBar);
+                card.appendChild(info);
+
+                card.onclick = () => {
+                    if (currentType !== 'movie') {
+                        currentType = 'movie';
+                        document.getElementById('btnMovie').classList.toggle('active', true);
+                        document.getElementById('btnTv').classList.toggle('active', false);
+                        document.getElementById('episodesFrame').classList.remove('active');
+                        renderGenreTags();
+                    }
+                    popupStack = [];
+                    aggiornaStatoChiusuraRecModal();
+                    aggiornaHeroDaItem(item);
+                };
+
+                container.appendChild(card);
+            });
+    }
+
+    /* ===================== CONSIGLIATI / QUIZ GUSTI ===================== */
+
+    function loadTasteProfile() {
+        try {
+            const saved = localStorage.getItem(TASTE_STORAGE_KEY);
+            tasteProfile = saved ? JSON.parse(saved) : null;
+        } catch {
+            tasteProfile = null;
+        }
+        try {
+            const seen = localStorage.getItem(TASTE_SEEN_KEY);
+            tasteSeenKeys = seen ? JSON.parse(seen) : [];
+        } catch {
+            tasteSeenKeys = [];
+        }
+    }
+
+    function saveTasteProfile() {
+        try {
+            localStorage.setItem(TASTE_STORAGE_KEY, JSON.stringify(tasteProfile));
+        } catch {
+            console.warn('Impossibile salvare i gusti su localStorage.');
+        }
+    }
+
+    function saveTasteSeenKeys() {
+        try {
+            localStorage.setItem(TASTE_SEEN_KEY, JSON.stringify(tasteSeenKeys));
+        } catch {
+            console.warn('Impossibile salvare i titoli già consigliati.');
+        }
+    }
+
+    let quizSelezioneCorrente = new Set();
+
+    function nuovoAccumulatoreQuiz() {
+        return {
+            genreKeys: new Set(),
+            avoidGenreKeys: new Set(),
+            typePref: [],
+            yearRanges: [],
+            runtimeRanges: [],
+            languages: new Set(),
+            platformIds: new Set(),
+            voteMin: 0,
+            popolarita: 'mix',
+            certificationMax: null,
+            tvType: null
+        };
+    }
+
+    function riavviaQuiz() {
+        tasteProfile = null;
+        tasteSeenKeys = [];
+        quizStep = 0;
+        quizAnswers = nuovoAccumulatoreQuiz();
+        quizSelezioneCorrente = new Set();
+        saveTasteProfile();
+        saveTasteSeenKeys();
+        renderConsigliatiSection();
+    }
+
+    function renderConsigliatiSection() {
+        const restartBtn = document.getElementById('quizRestartBtn');
+        if (!tasteProfile) {
+            restartBtn.style.display = 'none';
+            if (!quizAnswers || !quizAnswers.genreKeys) {
+                quizAnswers = nuovoAccumulatoreQuiz();
+                quizStep = 0;
+            }
+            renderQuizStep();
+        } else {
+            restartBtn.style.display = 'inline-block';
+            caricaConsigliati(true);
+        }
+    }
+
+    function renderQuizStep() {
+        const container = document.getElementById('consigliatiContent');
+        const domanda = QUIZ_QUESTIONS[quizStep];
+        if (!domanda) {
+            completaQuiz();
+            return;
+        }
+
+        quizSelezioneCorrente = new Set();
+
+        container.innerHTML = '';
+        const card = document.createElement('div');
+        card.className = 'quiz-card';
+
+        const progress = document.createElement('div');
+        progress.className = 'quiz-progress';
+        progress.textContent = `Domanda ${quizStep + 1} di ${QUIZ_QUESTIONS.length}`;
+
+        const question = document.createElement('div');
+        question.className = 'quiz-question';
+        question.textContent = domanda.question;
+
+        const options = document.createElement('div');
+        options.className = 'quiz-options';
+
+        domanda.options.forEach((opzione, idx) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'quiz-option-btn';
+            btn.textContent = opzione.label;
+
+            if (domanda.multiSelect) {
+                btn.onclick = () => {
+                    if (quizSelezioneCorrente.has(idx)) {
+                        quizSelezioneCorrente.delete(idx);
+                        btn.classList.remove('selected');
+                    } else {
+                        quizSelezioneCorrente.add(idx);
+                        btn.classList.add('selected');
+                    }
+                };
+            } else {
+                btn.onclick = () => {
+                    applicaRisposta(opzione);
+                    quizStep++;
+                    renderQuizStep();
+                };
+            }
+
+            options.appendChild(btn);
+        });
+
+        card.appendChild(progress);
+        card.appendChild(question);
+        card.appendChild(options);
+
+        if (domanda.multiSelect) {
+            const continueBtn = document.createElement('button');
+            continueBtn.type = 'button';
+            continueBtn.className = 'quiz-restart-btn';
+            continueBtn.style.marginTop = '20px';
+            continueBtn.textContent = domanda.optional ? 'Continua (anche senza selezionare nulla)' : 'Continua';
+            continueBtn.onclick = () => {
+                if (!domanda.optional && quizSelezioneCorrente.size === 0) {
+                    alert('Seleziona almeno un\'opzione per continuare.');
+                    return;
+                }
+                quizSelezioneCorrente.forEach(idx => applicaRisposta(domanda.options[idx]));
+                quizStep++;
+                renderQuizStep();
+            };
+            card.appendChild(continueBtn);
+        }
+
+        container.appendChild(card);
+    }
+
+    function applicaRisposta(opzione) {
+        if (opzione.genreKey) {
+            quizAnswers.genreKeys.add(opzione.genreKey);
+        }
+        if (opzione.genreKeys) {
+            opzione.genreKeys.forEach(k => quizAnswers.genreKeys.add(k));
+        }
+        if (opzione.avoidGenreKey) {
+            quizAnswers.avoidGenreKeys.add(opzione.avoidGenreKey);
+        }
+        if (opzione.typePref) {
+            quizAnswers.typePref.push(opzione.typePref);
+        }
+        if (opzione.yearMin !== undefined) {
+            quizAnswers.yearRanges.push([opzione.yearMin, opzione.yearMax]);
+        }
+        if (opzione.runtimeMin !== undefined) {
+            quizAnswers.runtimeRanges.push([opzione.runtimeMin, opzione.runtimeMax]);
+        }
+        if (opzione.languages) {
+            opzione.languages.forEach(l => quizAnswers.languages.add(l));
+        }
+        if (opzione.voteMin !== undefined) {
+            quizAnswers.voteMin = opzione.voteMin;
+        }
+        if (opzione.popolarita) {
+            quizAnswers.popolarita = opzione.popolarita;
+        }
+        if (opzione.platformIds) {
+            opzione.platformIds.forEach(p => quizAnswers.platformIds.add(p));
+        }
+        if (opzione.certificationMax) {
+            quizAnswers.certificationMax = opzione.certificationMax;
+        }
+        if (opzione.tvType !== undefined) {
+            quizAnswers.tvType = opzione.tvType;
+        }
+    }
+
+    function completaQuiz() {
+        let tipo = 'both';
+        if (quizAnswers.typePref.length) {
+            tipo = quizAnswers.typePref[quizAnswers.typePref.length - 1];
+        }
+
+        const yearRanges = quizAnswers.yearRanges;
+        const runtimeRanges = quizAnswers.runtimeRanges;
+
+        tasteProfile = {
+            genreKeys: Array.from(quizAnswers.genreKeys),
+            avoidGenreKeys: Array.from(quizAnswers.avoidGenreKeys),
+            type: tipo,
+            yearMin: yearRanges.length ? Math.min(...yearRanges.map(r => r[0])) : YEAR_MIN,
+            yearMax: yearRanges.length ? Math.max(...yearRanges.map(r => r[1])) : YEAR_MAX,
+            runtimeMin: runtimeRanges.length ? Math.min(...runtimeRanges.map(r => r[0])) : null,
+            runtimeMax: runtimeRanges.length ? Math.max(...runtimeRanges.map(r => r[1])) : null,
+            languages: Array.from(quizAnswers.languages),
+            platformIds: Array.from(quizAnswers.platformIds),
+            voteMin: quizAnswers.voteMin,
+            popolarita: quizAnswers.popolarita,
+            certificationMax: quizAnswers.certificationMax,
+            tvType: quizAnswers.tvType,
+            updatedAt: Date.now()
+        };
+
+        tasteSeenKeys = [];
+        saveTasteProfile();
+        saveTasteSeenKeys();
+        quizStep = 0;
+        renderConsigliatiSection();
+    }
+
+    function generiIdPerTipo(genreKeys, tipo) {
+        const ids = [];
+        genreKeys.forEach(key => {
+            const concetto = GENRE_CONCEPTS[key];
+            if (concetto && concetto[tipo]) {
+                ids.push(...concetto[tipo]);
+            }
+        });
+        return Array.from(new Set(ids));
+    }
+
+    async function caricaConsigliati(reset = false) {
+        const container = document.getElementById('consigliatiContent');
+        if (reset) {
+            container.innerHTML = '<div class="status-msg">Cerchiamo titoli in base ai tuoi gusti...</div>';
+        }
+
+        const tipiDaCercare = tasteProfile.type === 'both' ? ['movie', 'tv'] : [tasteProfile.type];
+        const lingue = tasteProfile.languages && tasteProfile.languages.length ? tasteProfile.languages : [null];
+
+        let sortBy = 'popularity.desc';
+        let voteCountMin = 50;
+        if (tasteProfile.popolarita === 'blockbuster') {
+            voteCountMin = 300;
+        } else if (tasteProfile.popolarita === 'nicchia') {
+            sortBy = 'vote_average.desc';
+            voteCountMin = 15;
+        }
+
+        let risultatiTrovati = [];
+
+        try {
+            for (const tipo of tipiDaCercare) {
+                const genreIds = generiIdPerTipo(tasteProfile.genreKeys, tipo);
+                const avoidIds = generiIdPerTipo(tasteProfile.avoidGenreKeys, tipo);
+                const dateField = tipo === 'movie' ? 'primary_release_date' : 'first_air_date';
+
+                for (const lingua of lingue) {
+                    const pagina = Math.floor(Math.random() * 5) + 1;
+                    let url = `https://api.themoviedb.org/3/discover/${tipo}?api_key=${API_KEY}&language=it-IT&sort_by=${sortBy}&vote_count.gte=${voteCountMin}&page=${pagina}`;
+                    if (genreIds.length) url += `&with_genres=${genreIds.join('|')}`;
+                    if (avoidIds.length) url += `&without_genres=${avoidIds.join(',')}`;
+                    if (tasteProfile.voteMin) url += `&vote_average.gte=${tasteProfile.voteMin}`;
+                    if (tasteProfile.yearMin) url += `&${dateField}.gte=${tasteProfile.yearMin}-01-01`;
+                    if (tasteProfile.yearMax) url += `&${dateField}.lte=${tasteProfile.yearMax}-12-31`;
+                    if (tipo === 'movie' && tasteProfile.runtimeMin !== null) url += `&with_runtime.gte=${tasteProfile.runtimeMin}`;
+                    if (tipo === 'movie' && tasteProfile.runtimeMax !== null) url += `&with_runtime.lte=${tasteProfile.runtimeMax}`;
+                    if (lingua) url += `&with_original_language=${lingua}`;
+                    if (tasteProfile.platformIds && tasteProfile.platformIds.length) {
+                        url += `&with_watch_providers=${tasteProfile.platformIds.join('|')}&watch_region=IT`;
+                    }
+                    if (tasteProfile.certificationMax) {
+                        url += `&certification_country=US&certification.lte=${tasteProfile.certificationMax}`;
+                    }
+                    if (tipo === 'tv' && tasteProfile.tvType !== null && tasteProfile.tvType !== undefined) {
+                        url += `&with_type=${tasteProfile.tvType}`;
+                    }
+
+                    const res = await fetch(url);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    const results = (data.results || []).map(item => ({ ...item, type: tipo }));
+                    risultatiTrovati = risultatiTrovati.concat(results);
+                }
+            }
+        } catch {
+            container.innerHTML = '<div class="status-msg">Errore nel caricamento dei consigli. Riprova più tardi.</div>';
+            return;
+        }
+
+        // Rimuove eventuali duplicati (stesso titolo trovato in più query)
+        const vistiInQuestoGiro = new Set();
+        risultatiTrovati = risultatiTrovati.filter(item => {
+            const key = getContinueKey(item);
+            if (vistiInQuestoGiro.has(key)) return false;
+            vistiInQuestoGiro.add(key);
+            return true;
+        });
+
+        const nuovi = risultatiTrovati.filter(item => !tasteSeenKeys.includes(getContinueKey(item)));
+
+        if (!nuovi.length) {
+            if (reset) {
+                consigliatiCache = [];
+                container.innerHTML = '<div class="favorites-empty">Non abbiamo altri titoli nuovi per i tuoi gusti al momento. Riprova tra poco o rifai il quiz.</div>';
+            } else {
+                alert('Nessun altro consiglio nuovo al momento, riprova più tardi.');
+            }
+            return;
+        }
+
+        const daMostrare = nuovi.slice(0, 12);
+        daMostrare.forEach(item => tasteSeenKeys.push(getContinueKey(item)));
+        saveTasteSeenKeys();
+
+        if (reset) {
+            consigliatiCache = daMostrare;
+        } else {
+            consigliatiCache = consigliatiCache.concat(daMostrare);
+        }
+
+        renderConsigliatiGrid();
+    }
+
+    function renderConsigliatiGrid() {
+        const container = document.getElementById('consigliatiContent');
+        container.innerHTML = '';
+
+        const grid = document.createElement('div');
+        grid.className = 'consigliati-grid';
+
+        consigliatiCache.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card-item';
+            card.tabIndex = 0;
+
+            const posterPath = item.poster_path
+                ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+                : 'https://via.placeholder.com/185x278?text=No+Cover';
+
+            const img = document.createElement('img');
+            img.className = 'card-img';
+            img.src = posterPath;
+            img.alt = item.title || item.name || '';
+
+            const info = document.createElement('div');
+            info.className = 'card-info';
+            const titleEl = document.createElement('div');
+            titleEl.className = 'card-title';
+            titleEl.textContent = item.title || item.name || '';
+            info.appendChild(titleEl);
+
+            card.appendChild(img);
+            card.appendChild(info);
+            card.onclick = () => {
+                if (currentType !== item.type) {
+                    currentType = item.type;
+                    document.getElementById('btnMovie').classList.toggle('active', currentType === 'movie');
+                    document.getElementById('btnTv').classList.toggle('active', currentType === 'tv');
+                    document.getElementById('episodesFrame').classList.toggle('active', currentType === 'tv');
+                    renderGenreTags();
+                }
+                popupStack = [];
+                aggiornaStatoChiusuraRecModal();
+                aggiornaHeroDaItem(item);
+            };
+            grid.appendChild(card);
+        });
+
+        container.appendChild(grid);
+
+        const moreContainer = document.createElement('div');
+        moreContainer.className = 'consigliati-more-container';
+        const moreBtn = document.createElement('button');
+        moreBtn.type = 'button';
+        moreBtn.className = 'btn-load-more-consigliati';
+        moreBtn.textContent = 'Altri consigli';
+        moreBtn.onclick = () => caricaConsigliati(false);
+        moreContainer.appendChild(moreBtn);
+        container.appendChild(moreContainer);
+    }
+
     function setView(view) {
         currentView = view;
 
         const homeBtn = document.getElementById('homeViewBtn');
         const favoritesBtn = document.getElementById('favoritesViewBtn');
         const platformsBtn = document.getElementById('platformsViewBtn');
+        const continueBtn = document.getElementById('continueViewBtn');
+        const consigliatiBtn = document.getElementById('consigliatiViewBtn');
         const favoritesSection = document.getElementById('favoritesSection');
         const popularSection = document.getElementById('popularSection');
         const platformsSection = document.getElementById('platformsSection');
+        const continueSection = document.getElementById('continueSection');
+        const consigliatiSection = document.getElementById('consigliatiSection');
 
         // Update button states
-        [homeBtn, favoritesBtn, platformsBtn].forEach(btn => btn.classList.remove('active'));
+        [homeBtn, favoritesBtn, platformsBtn, continueBtn, consigliatiBtn].forEach(btn => btn.classList.remove('active'));
         
         if (view === 'home') {
             homeBtn.classList.add('active');
@@ -1989,15 +3166,29 @@
             favoritesBtn.classList.add('active');
         } else if (view === 'platforms') {
             platformsBtn.classList.add('active');
+        } else if (view === 'continue') {
+            continueBtn.classList.add('active');
+        } else if (view === 'consigliati') {
+            consigliatiBtn.classList.add('active');
         }
+
+        const sectionsNascoste = ['favorites', 'platforms', 'continue', 'consigliati'];
 
         // Show/hide sections
         if (favoritesSection) {
             favoritesSection.style.display = view === 'favorites' ? 'flex' : 'none';
         }
 
+        if (continueSection) {
+            continueSection.style.display = view === 'continue' ? 'flex' : 'none';
+        }
+
+        if (consigliatiSection) {
+            consigliatiSection.style.display = view === 'consigliati' ? 'flex' : 'none';
+        }
+
         if (popularSection) {
-            popularSection.style.display = (view === 'favorites' || view === 'platforms') ? 'none' : 'flex';
+            popularSection.style.display = sectionsNascoste.includes(view) ? 'none' : 'flex';
         }
 
         if (platformsSection) {
@@ -2010,6 +3201,10 @@
         } else if (view === 'platforms') {
             renderPlatformTabs();
             loadPlatformContent(currentPlatformId);
+        } else if (view === 'continue') {
+            renderContinueSection();
+        } else if (view === 'consigliati') {
+            renderConsigliatiSection();
         }
     }
 
@@ -2534,6 +3729,21 @@ async function fetchRecommendations(id, mediaType = currentType) {
         recModalCard.addEventListener('click', (event) => {
             event.stopPropagation();
         });
+
+        const progressModal = document.getElementById('progressModal');
+        const progressModalCard = document.querySelector('.progress-modal-card');
+        if (progressModal) {
+            progressModal.addEventListener('click', (event) => {
+                if (event.target === progressModal) {
+                    chiudiProgressoModal();
+                }
+            });
+        }
+        if (progressModalCard) {
+            progressModalCard.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+        }
     });
     function nascondiSplashScreen() {
         const splash = document.getElementById('splashScreen');
@@ -2545,6 +3755,8 @@ async function fetchRecommendations(id, mediaType = currentType) {
     window.onload = () => {
         loadFavorites();
         renderFavoritesSection();
+        loadContinueWatching();
+        loadTasteProfile();
         renderGenreTags();
         renderProviderTags();
         initYearSlider();
@@ -2969,11 +4181,13 @@ async function fetchRecommendations(id, mediaType = currentType) {
         document.getElementById('heroTitle').innerText = nome;
         document.getElementById('heroOverview').innerText = elementoSelezionato.overview || 'Nessuna descrizione disponibile.';
 
+        let runtimeMinutiRilevato = null;
         try {
             const detailRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${elementoSelezionato.id}?api_key=${API_KEY}&language=it-IT`);
             if (detailRes.ok) {
                 const details = await detailRes.json();
                 const runtime = mediaType === 'movie' ? details.runtime : '';
+                runtimeMinutiRilevato = runtime || null;
                 const countries = formatCountries(details.production_countries || []);
                 const detailsMeta = [anno, voto, runtime ? formatRuntime(runtime) : '', countries].filter(Boolean);
                 document.getElementById('heroMeta').innerText = detailsMeta.join(' • ');
@@ -2997,6 +4211,8 @@ async function fetchRecommendations(id, mediaType = currentType) {
         }
 
         updateFavoriteButton(elementoSelezionato);
+        elementoSelezionato.type = mediaType;
+        aggiornaProgressoButton(elementoSelezionato, runtimeMinutiRilevato);
 
         fetchRecommendations(elementoSelezionato.id, mediaType);
         if (currentView === 'favorites') {
@@ -3027,11 +4243,13 @@ async function fetchRecommendations(id, mediaType = currentType) {
         document.getElementById('heroTitle').innerText = nome;
         document.getElementById('heroOverview').innerText = item.overview || 'Nessuna descrizione disponibile.';
 
+        let runtimeMinutiRilevato = null;
         try {
             const detailRes = await fetch(`https://api.themoviedb.org/3/${tipoPerHero}/${item.id}?api_key=${API_KEY}&language=it-IT`);
             if (detailRes.ok) {
                 const details = await detailRes.json();
                 const runtime = tipoPerHero === 'movie' ? details.runtime : '';
+                runtimeMinutiRilevato = runtime || null;
                 const countries = formatCountries(details.production_countries || []);
                 const detailsMeta = [anno, voto, runtime ? formatRuntime(runtime) : '', countries].filter(Boolean);
                 document.getElementById('heroMeta').innerText = detailsMeta.join(' • ');
@@ -3055,6 +4273,8 @@ async function fetchRecommendations(id, mediaType = currentType) {
         }
 
         updateFavoriteButton(item);
+        item.type = tipoPerHero;
+        aggiornaProgressoButton(item, runtimeMinutiRilevato);
 
         fetchRecommendations(item.id, tipoPerHero);
     }
@@ -3213,6 +4433,27 @@ async function fetchRecommendations(id, mediaType = currentType) {
     </div>
 </div>
 
+<div id="progressModal" class="progress-modal" role="dialog" aria-modal="true" aria-label="Salva posizione visione">
+    <div class="progress-modal-card">
+        <button type="button" class="trailer-modal-close" onclick="chiudiProgressoModal()" aria-label="Chiudi">✕</button>
+        <div class="progress-modal-title" id="progressModalTitle">Continua a guardare</div>
+        <div class="progress-modal-subtitle">A che minuto sei arrivato?</div>
+        <div class="progress-slider-values">
+            <span id="progressCurrentLabel">0 min</span>
+            <span id="progressTotalLabel">/ 0 min</span>
+        </div>
+        <div class="progress-slider" id="progressSlider">
+            <div class="progress-slider-track"></div>
+            <div class="progress-slider-fill" id="progressSliderFill"></div>
+            <input type="range" id="progressInput" min="0" max="1" value="0" step="1" aria-label="Minuto raggiunto" oninput="aggiornaLabelProgresso()">
+        </div>
+        <div class="progress-modal-actions">
+            <button type="button" class="btn-action" onclick="chiudiProgressoModal()">Annulla</button>
+            <button type="button" class="btn-action btn-save" onclick="salvaProgresso()">Salva</button>
+        </div>
+    </div>
+</div>
+
 <div id="recModal" class="rec-modal" role="dialog" aria-modal="true" aria-label="Dettaglio titolo">
     <div class="rec-modal-card">
         <button type="button" class="trailer-modal-close" id="recModalCloseBtn" onclick="chiudiPopupConsigliato()" aria-label="Chiudi">✕</button>
@@ -3238,6 +4479,7 @@ async function fetchRecommendations(id, mediaType = currentType) {
                         ▶
                     </button>
                     <button class="btn-favorite" id="btnFavorite" type="button" onclick="toggleFavorite(elementoSelezionato)" tabindex="0" aria-label="Aggiungi ai preferiti" aria-pressed="false">♡</button>
+                    <button class="btn-progress" id="btnProgress" type="button" onclick="apriProgressoModal()" tabindex="0" aria-label="Salva posizione visione" style="display:none;">⏱</button>
                     <button class="btn-action btn-trailer" type="button" onclick="showTrailer()" tabindex="0">Trailer</button>
                 </div>
             </div>
