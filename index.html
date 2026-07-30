@@ -318,8 +318,18 @@
             flex-grow: 1;
         }
 
-        .search-box input[type="text"] {
+        .search-box input[type="text"],
+        .search-box input[type="search"] {
             border-radius: 999px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .search-box input[type="search"]::-webkit-search-decoration,
+        .search-box input[type="search"]::-webkit-search-cancel-button,
+        .search-box input[type="search"]::-webkit-search-results-button,
+        .search-box input[type="search"]::-webkit-search-results-decoration {
+            -webkit-appearance: none;
         }
 
         .btn-random {
@@ -2445,7 +2455,7 @@
                 <span class="dice-icon">🎲</span><span class="random-label">Random</span>
             </button>
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Digita per cercare..." oninput="onInputSearch()" onkeydown="if(event.key === 'Enter') cercaImmediata()" tabindex="0" autocomplete="off">
+                <input type="search" id="searchInput" name="site-search" placeholder="Digita per cercare..." oninput="onInputSearch()" onkeydown="if(event.key === 'Enter') cercaImmediata()" tabindex="0" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other">
             </div>
             <button class="account-btn" id="accountBtn" type="button" onclick="apriModaleAccount()" tabindex="0">
                 <span id="accountBtnLabel">Accedi</span>
@@ -5159,27 +5169,29 @@ async function fetchRecommendations(id, mediaType = currentType) {
             <div class="auth-modal-subtitle" id="authModalSubtitle">Accedi per sincronizzare preferiti, continua a guardare e consigliati su tutti i tuoi dispositivi.</div>
             <div class="auth-modal-error" id="authModalError"></div>
 
-            <div class="auth-input-group">
-                <input type="email" id="authEmailInput" autocomplete="email" placeholder="Email">
-                <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z" opacity="0"/><path d="M22 6 12 13 2 6"/><path d="M2 6h20v12H2z"/></svg>
-            </div>
-            <div class="auth-input-group has-toggle">
-                <input type="password" id="authPasswordInput" autocomplete="current-password" placeholder="Password (almeno 6 caratteri)">
-                <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-                <button type="button" class="auth-eye-toggle" id="authEyeToggle" onclick="togglePasswordVisibility()" aria-label="Mostra password">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                </button>
-            </div>
+            <form id="authForm" autocomplete="on" onsubmit="event.preventDefault(); eseguiAuthSubmit();">
+                <div class="auth-input-group">
+                    <input type="email" id="authEmailInput" name="email" autocomplete="email" placeholder="Email">
+                    <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z" opacity="0"/><path d="M22 6 12 13 2 6"/><path d="M2 6h20v12H2z"/></svg>
+                </div>
+                <div class="auth-input-group has-toggle">
+                    <input type="password" id="authPasswordInput" name="password" autocomplete="current-password" placeholder="Password (almeno 6 caratteri)">
+                    <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                    <button type="button" class="auth-eye-toggle" id="authEyeToggle" onclick="togglePasswordVisibility()" aria-label="Mostra password">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
 
-            <div class="auth-modal-row" id="authRememberRow">
-                <label class="auth-remember-label">
-                    <input type="checkbox" id="authRememberCheckbox" checked>
-                    Ricordami
-                </label>
-                <a class="auth-forgot-link" id="authForgotLink" onclick="richiediResetPassword()">Password dimenticata?</a>
-            </div>
+                <div class="auth-modal-row" id="authRememberRow">
+                    <label class="auth-remember-label">
+                        <input type="checkbox" id="authRememberCheckbox" checked>
+                        Ricordami
+                    </label>
+                    <a class="auth-forgot-link" id="authForgotLink" onclick="richiediResetPassword()">Password dimenticata?</a>
+                </div>
 
-            <button class="auth-submit-btn" type="button" id="authSubmitBtn" onclick="eseguiAuthSubmit()">Accedi</button>
+                <button class="auth-submit-btn" type="submit" id="authSubmitBtn">Accedi</button>
+            </form>
         </div>
 
         <div id="authViewLoggedIn" style="display:none;">
