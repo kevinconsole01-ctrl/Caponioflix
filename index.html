@@ -1869,16 +1869,32 @@
 
         /* ===== Account / Login ===== */
         .account-btn {
+            display: flex;
+            align-items: center;
+            gap: 7px;
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.16);
             color: #fff;
-            border-radius: 6px;
-            padding: 8px 14px;
+            border-radius: 999px;
+            padding: 7px 14px 7px 7px;
             font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
-            transition: background-color var(--dur-fast) var(--ease-standard);
+            transition: background-color var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
+        }
+
+        .account-btn::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.14);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 14px 14px;
         }
 
         .account-btn:hover {
@@ -1890,11 +1906,25 @@
             border-color: rgba(229, 9, 20, 0.5);
         }
 
+        .account-btn.is-logged-in::before {
+            background-color: var(--accent);
+            background-image: none;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #fff;
+            content: attr(data-initial);
+        }
+
         .auth-modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.84);
+            background: rgba(8, 6, 6, 0.86);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             z-index: 10005;
             justify-content: center;
             align-items: center;
@@ -1908,28 +1938,147 @@
         }
 
         .auth-modal-card {
-            background: rgba(20, 20, 20, 0.97);
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            border-radius: 12px;
-            max-width: 380px;
+            background:
+                radial-gradient(120% 90% at 50% -10%, rgba(229, 9, 20, 0.22), transparent 60%),
+                linear-gradient(180deg, rgba(24, 20, 20, 0.98), rgba(14, 12, 12, 0.98));
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            max-width: 400px;
             width: 100%;
-            padding: 28px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            padding: 0 30px 30px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(229, 9, 20, 0.06);
             position: relative;
+            overflow: hidden;
             animation: modalContentIn var(--dur-slow) var(--ease-out-smooth);
             cursor: default;
         }
 
         .auth-modal-close {
             position: absolute;
-            top: 14px;
-            right: 14px;
+            top: 16px;
+            right: 16px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.06);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            line-height: 1;
+            z-index: 3;
+            transition: background-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
+        }
+
+        .auth-modal-close:hover {
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
+        }
+
+        .auth-modal-header {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 26px 0 18px;
+        }
+
+        .auth-modal-brand {
+            font-family: 'Bebas Neue', 'Helvetica Neue', Arial, sans-serif;
+            letter-spacing: 0.09em;
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        .auth-modal-brand span {
+            color: var(--accent);
+        }
+
+        .auth-modal-brand-sub {
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .auth-modal-tear {
+            position: relative;
+            height: 1px;
+            margin: 0 -30px 22px;
+            background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.22) 0 8px, transparent 8px 16px);
+        }
+
+        .auth-modal-tear::before {
+            content: '';
+            position: absolute;
+            inset: -7px -30px auto auto;
+            left: -8px;
+            top: -7px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(8, 6, 6, 0.86);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-modal-tear::after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: -7px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(8, 6, 6, 0.86);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-tabs {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .auth-tab-indicator {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: var(--accent);
+            border-radius: 999px;
+            transition: transform var(--dur-base) var(--ease-out-smooth);
+            z-index: 0;
+            box-shadow: 0 4px 14px rgba(229, 9, 20, 0.35);
+        }
+
+        .auth-tabs.is-register .auth-tab-indicator {
+            transform: translateX(100%);
+        }
+
+        .auth-tab {
+            position: relative;
+            z-index: 1;
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 1.2rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 9px 0;
+            border-radius: 999px;
             cursor: pointer;
-            line-height: 1;
+            transition: color var(--dur-fast) var(--ease-standard);
+        }
+
+        .auth-tab.active {
+            color: #fff;
         }
 
         .auth-modal-title {
@@ -1940,34 +2089,80 @@
 
         .auth-modal-subtitle {
             color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 20px;
+            font-size: 0.83rem;
+            line-height: 1.4;
+            margin-bottom: 18px;
         }
 
-        .auth-modal-field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+        .auth-input-group {
+            position: relative;
             margin-bottom: 14px;
         }
 
-        .auth-modal-field label {
-            font-size: 0.78rem;
+        .auth-input-group svg.auth-input-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            stroke: var(--text-muted);
+            pointer-events: none;
+            transition: stroke var(--dur-fast) var(--ease-standard);
+        }
+
+        .auth-input-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 9px;
+            padding: 12px 14px 12px 40px;
+            color: #fff;
+            font-size: 0.9rem;
+            transition: border-color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
+        }
+
+        .auth-input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.32);
+        }
+
+        .auth-input-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(229, 9, 20, 0.06);
+        }
+
+        .auth-input-group input:focus ~ svg.auth-input-icon {
+            stroke: var(--accent);
+        }
+
+        .auth-input-group.has-toggle input {
+            padding-right: 40px;
+        }
+
+        .auth-eye-toggle {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            cursor: pointer;
             color: var(--text-muted);
         }
 
-        .auth-modal-field input {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 6px;
-            padding: 10px 12px;
+        .auth-eye-toggle:hover {
             color: #fff;
-            font-size: 0.9rem;
         }
 
-        .auth-modal-field input:focus {
-            outline: none;
-            border-color: var(--accent);
+        .auth-eye-toggle svg {
+            width: 17px;
+            height: 17px;
         }
 
         .auth-modal-error {
@@ -1977,41 +2172,55 @@
             min-height: 1em;
         }
 
-        .auth-modal-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 6px;
+        .auth-modal-error.is-success {
+            color: #4cd964;
         }
 
-        .auth-modal-actions .btn-action {
+        .auth-submit-btn {
+            width: 100%;
             background: var(--accent);
-            border: 1px solid var(--accent);
+            border: none;
             color: #fff;
-            border-radius: 8px;
-            padding: 11px 18px;
+            border-radius: 9px;
+            padding: 13px 18px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.92rem;
+            letter-spacing: 0.02em;
+            margin-top: 4px;
+            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.3);
+            transition: transform var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard), opacity var(--dur-fast) var(--ease-standard);
+        }
+
+        .auth-submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 26px rgba(229, 9, 20, 0.4);
+        }
+
+        .auth-submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .auth-submit-btn:disabled {
+            opacity: 0.6;
+            cursor: default;
+            transform: none;
         }
 
         .auth-modal-actions .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-
-        .auth-modal-switch {
-            text-align: center;
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            margin-top: 16px;
-        }
-
-        .auth-modal-switch a {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
             color: #fff;
-            font-weight: 700;
+            border-radius: 9px;
+            padding: 12px 18px;
             cursor: pointer;
-            text-decoration: underline;
+            font-weight: 700;
+            font-size: 0.88rem;
+        }
+
+        .auth-modal-actions .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.14);
         }
 
         .auth-modal-row {
@@ -2049,20 +2258,39 @@
             color: #fff;
         }
 
-        .auth-modal-error.is-success {
-            color: #4cd964;
+        .auth-account-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bebas Neue', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.04em;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.35);
         }
 
         .auth-modal-account-info {
             font-size: 0.9rem;
-            margin-bottom: 18px;
+            margin-bottom: 4px;
             word-break: break-all;
+            color: var(--text-muted);
+        }
+
+        .auth-modal-account-info strong {
+            display: block;
+            color: #fff;
+            font-size: 1rem;
+            margin-top: 2px;
         }
 
         .auth-sync-status {
             font-size: 0.75rem;
             color: var(--text-muted);
-            margin-top: 4px;
+            margin: 10px 0 20px;
         }
 
         @media (max-width: 900px) {
@@ -2383,6 +2611,9 @@
     function apriModaleAccount() {
         document.getElementById('authModal').classList.add('is-open');
         document.getElementById('authModalError').textContent = '';
+        if (!currentUser) {
+            setAuthMode(false);
+        }
         aggiornaUIAccount();
     }
 
@@ -2390,19 +2621,29 @@
         document.getElementById('authModal').classList.remove('is-open');
     }
 
-    function toggleAuthMode() {
-        isAuthRegisterMode = !isAuthRegisterMode;
-        document.getElementById('authModalTitle').textContent = isAuthRegisterMode ? 'Crea account' : 'Accedi';
-        document.getElementById('authModalSubtitle').textContent = isAuthRegisterMode
+    function setAuthMode(isRegister) {
+        isAuthRegisterMode = isRegister;
+        document.getElementById('authTabs').classList.toggle('is-register', isRegister);
+        document.getElementById('authTabLogin').classList.toggle('active', !isRegister);
+        document.getElementById('authTabRegister').classList.toggle('active', isRegister);
+        document.getElementById('authModalSubtitle').textContent = isRegister
             ? 'Crea un account per salvare i tuoi dati e ritrovarli su ogni dispositivo.'
             : 'Accedi per sincronizzare preferiti, continua a guardare e consigliati su tutti i tuoi dispositivi.';
-        document.getElementById('authSubmitBtn').textContent = isAuthRegisterMode ? 'Registrati' : 'Accedi';
-        document.getElementById('authModalSwitch').innerHTML = isAuthRegisterMode
-            ? 'Hai già un account? <a onclick="toggleAuthMode()">Accedi</a>'
-            : 'Non hai un account? <a onclick="toggleAuthMode()">Registrati</a>';
-        document.getElementById('authRememberRow').style.display = isAuthRegisterMode ? 'none' : 'flex';
+        document.getElementById('authSubmitBtn').textContent = isRegister ? 'Registrati' : 'Accedi';
+        document.getElementById('authRememberRow').style.display = isRegister ? 'none' : 'flex';
         document.getElementById('authModalError').textContent = '';
         document.getElementById('authModalError').classList.remove('is-success');
+    }
+
+    function togglePasswordVisibility() {
+        const input = document.getElementById('authPasswordInput');
+        const btn = document.getElementById('authEyeToggle');
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        btn.setAttribute('aria-label', isHidden ? 'Nascondi password' : 'Mostra password');
+        btn.innerHTML = isHidden
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.6 18.6 0 0 1 4.22-5.06M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
     }
 
     function eseguiAuthSubmit() {
@@ -2500,14 +2741,18 @@
         const viewLoggedIn = document.getElementById('authViewLoggedIn');
 
         if (currentUser) {
+            const iniziale = currentUser.email.charAt(0).toUpperCase();
             btnLabel.textContent = currentUser.email.split('@')[0];
             btn.classList.add('is-logged-in');
+            btn.setAttribute('data-initial', iniziale);
             viewLoggedOut.style.display = 'none';
             viewLoggedIn.style.display = 'block';
             document.getElementById('authLoggedInEmail').textContent = currentUser.email;
+            document.getElementById('authAccountAvatar').textContent = iniziale;
         } else {
             btnLabel.textContent = 'Accedi';
             btn.classList.remove('is-logged-in');
+            btn.removeAttribute('data-initial');
             viewLoggedOut.style.display = 'block';
             viewLoggedIn.style.display = 'none';
         }
@@ -4898,18 +5143,34 @@ async function fetchRecommendations(id, mediaType = currentType) {
     <div class="auth-modal-card">
         <button class="auth-modal-close" type="button" onclick="chiudiModaleAccount()" aria-label="Chiudi">✕</button>
 
+        <div class="auth-modal-header">
+            <span class="auth-modal-brand">CAPONIO<span>FLIX</span></span>
+            <span class="auth-modal-brand-sub">Account</span>
+        </div>
+        <div class="auth-modal-tear"></div>
+
         <div id="authViewLoggedOut">
-            <div class="auth-modal-title" id="authModalTitle">Accedi</div>
+            <div class="auth-tabs" id="authTabs">
+                <div class="auth-tab-indicator" id="authTabIndicator"></div>
+                <button class="auth-tab active" id="authTabLogin" type="button" onclick="setAuthMode(false)">Accedi</button>
+                <button class="auth-tab" id="authTabRegister" type="button" onclick="setAuthMode(true)">Registrati</button>
+            </div>
+
             <div class="auth-modal-subtitle" id="authModalSubtitle">Accedi per sincronizzare preferiti, continua a guardare e consigliati su tutti i tuoi dispositivi.</div>
             <div class="auth-modal-error" id="authModalError"></div>
-            <div class="auth-modal-field">
-                <label for="authEmailInput">Email</label>
-                <input type="email" id="authEmailInput" autocomplete="email" placeholder="tuamail@esempio.it">
+
+            <div class="auth-input-group">
+                <input type="email" id="authEmailInput" autocomplete="email" placeholder="Email">
+                <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z" opacity="0"/><path d="M22 6 12 13 2 6"/><path d="M2 6h20v12H2z"/></svg>
             </div>
-            <div class="auth-modal-field">
-                <label for="authPasswordInput">Password</label>
-                <input type="password" id="authPasswordInput" autocomplete="current-password" placeholder="Almeno 6 caratteri">
+            <div class="auth-input-group has-toggle">
+                <input type="password" id="authPasswordInput" autocomplete="current-password" placeholder="Password (almeno 6 caratteri)">
+                <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                <button type="button" class="auth-eye-toggle" id="authEyeToggle" onclick="togglePasswordVisibility()" aria-label="Mostra password">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
             </div>
+
             <div class="auth-modal-row" id="authRememberRow">
                 <label class="auth-remember-label">
                     <input type="checkbox" id="authRememberCheckbox" checked>
@@ -4917,20 +5178,16 @@ async function fetchRecommendations(id, mediaType = currentType) {
                 </label>
                 <a class="auth-forgot-link" id="authForgotLink" onclick="richiediResetPassword()">Password dimenticata?</a>
             </div>
-            <div class="auth-modal-actions">
-                <button class="btn-action" type="button" id="authSubmitBtn" onclick="eseguiAuthSubmit()">Accedi</button>
-            </div>
-            <div class="auth-modal-switch" id="authModalSwitch">
-                Non hai un account? <a onclick="toggleAuthMode()">Registrati</a>
-            </div>
+
+            <button class="auth-submit-btn" type="button" id="authSubmitBtn" onclick="eseguiAuthSubmit()">Accedi</button>
         </div>
 
         <div id="authViewLoggedIn" style="display:none;">
-            <div class="auth-modal-title">Account</div>
-            <div class="auth-modal-account-info">Accesso effettuato come<br><strong id="authLoggedInEmail"></strong></div>
+            <div class="auth-account-avatar" id="authAccountAvatar"></div>
+            <div class="auth-modal-account-info">Accesso effettuato come<strong id="authLoggedInEmail"></strong></div>
             <div class="auth-sync-status" id="authSyncStatus"></div>
-            <div class="auth-modal-actions" style="margin-top:18px;">
-                <button class="btn-action btn-secondary" type="button" onclick="eseguiLogout()">Esci</button>
+            <div class="auth-modal-actions">
+                <button class="btn-secondary" type="button" onclick="eseguiLogout()">Esci</button>
             </div>
         </div>
     </div>
